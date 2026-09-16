@@ -2,10 +2,10 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>🐔 Pollo Transform Clicker — Low Poly 3D</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a1428">
+<title>🐔 Pollo &amp; Cocodrillo — Symulator Fontanny</title>
 
-<!-- Cute rounded font (degrades gracefully to system fonts if offline) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
@@ -15,40 +15,25 @@
    RESET & BASE
    ============================================================ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
 html, body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+  width: 100%; height: 100%; overflow: hidden;
   background: #9fd8ff;
-  font-family: 'Baloo 2', 'Segoe UI', 'Trebuchet MS', system-ui, sans-serif;
-  user-select: none;
-  -webkit-user-select: none;
+  font-family: 'Baloo 2', 'Segoe UI', system-ui, sans-serif;
+  user-select: none; -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
 }
-
-canvas {
-  display: block;
-  touch-action: none;
-  cursor: grab;
-}
+canvas { display: block; touch-action: none; cursor: grab; }
 canvas:active { cursor: grabbing; }
 
 /* ============================================================
-   GLASSMORPHISM UI LAYER
+   GLASSMORPHISM PANELS
    ============================================================ */
-#hud {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 10;
-}
+#hud { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
 
-/* Shared glass panel look */
 .panel {
-  position: absolute;
-  pointer-events: auto;
-  background: rgba(255, 255, 255, 0.16);
+  position: absolute; pointer-events: auto;
+  background: rgba(255, 255, 255, 0.14);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   border: 1.5px solid rgba(255, 255, 255, 0.42);
@@ -62,122 +47,128 @@ canvas:active { cursor: grabbing; }
   padding: 12px 16px;
 }
 
-/* ---------- TOP LEFT : CURRENCY ---------- */
+/* ---------- TOP LEFT : currency ---------- */
 #statsPanel {
-  top: 18px;
-  left: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 158px;
+  top: calc(18px + env(safe-area-inset-top));
+  left: calc(18px + env(safe-area-inset-left));
+  display: flex; flex-direction: column; gap: 10px;
+  min-width: 178px;
 }
-
-.stat {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: 0.4px;
-  line-height: 1;
+.stat { display: flex; flex-direction: column; gap: 1px; line-height: 1; }
+.stat .lbl {
+  font-size: 10.5px; letter-spacing: 1.6px; opacity: 0.85;
+  font-weight: 700; text-transform: uppercase;
 }
-
-.stat .icon {
-  font-size: 20px;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+.stat .val {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 23px; font-weight: 800; letter-spacing: 0.4px;
 }
-
 #goldValue { color: #ffe27a; }
-#eggValue  { color: #fff2c4; }
-
-.stat.pop { animation: statPop 0.35s ease; }
+#eggValue  { color: #ffe9b3; }
+.stat.pop .val { animation: statPop 0.4s ease; }
 @keyframes statPop {
   0%   { transform: scale(1); }
-  40%  { transform: scale(1.22); }
+  38%  { transform: scale(1.26); }
   100% { transform: scale(1); }
 }
 
-/* ---------- TOP RIGHT : FOUNTAIN LEVEL ---------- */
+/* ---------- TOP RIGHT : rank ---------- */
 #levelPanel {
-  top: 18px;
-  right: 18px;
-  min-width: 214px;
-  text-align: right;
+  top: calc(18px + env(safe-area-inset-top));
+  right: calc(18px + env(safe-area-inset-right));
+  min-width: 250px; text-align: right;
 }
-
 .lvlTitle {
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 1.6px;
-  opacity: 0.92;
-  text-transform: uppercase;
+  font-size: 11px; font-weight: 700; letter-spacing: 2.2px;
+  opacity: 0.88; text-transform: uppercase;
 }
-
-.lvlTitle b {
-  font-size: 17px;
-  color: #ffe27a;
+.rankName {
+  font-size: 19px; font-weight: 800; color: #ffe27a;
+  letter-spacing: 0.4px; margin-top: 2px;
+  text-shadow: 0 0 14px rgba(255, 200, 70, 0.6), 0 2px 6px rgba(15, 35, 65, 0.55);
 }
-
+.lvlMeta {
+  font-size: 12px; font-weight: 700; opacity: 0.92;
+  margin-top: 1px; letter-spacing: 0.4px;
+}
 .bar {
-  width: 100%;
-  height: 13px;
-  border-radius: 9px;
-  background: rgba(10, 30, 60, 0.32);
-  overflow: hidden;
-  margin-top: 7px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  width: 100%; height: 13px; border-radius: 9px;
+  background: rgba(10, 30, 60, 0.32); overflow: hidden;
+  margin-top: 8px; border: 1px solid rgba(255, 255, 255, 0.28);
   box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.28);
 }
-
 .barFill {
-  height: 100%;
-  width: 33.333%;
-  border-radius: 9px;
+  height: 100%; width: 6.66%; border-radius: 9px;
   background: linear-gradient(90deg, #fff2a8 0%, #ffcf3d 45%, #ff9d13 100%);
   box-shadow: 0 0 14px rgba(255, 200, 60, 0.95);
-  transition: width 0.45s cubic-bezier(0.34, 1.4, 0.64, 1);
+  transition: width 0.5s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.mult {
+  margin-top: 7px; font-size: 13px; font-weight: 800;
+  letter-spacing: 0.5px; color: #ffd75e;
+  text-shadow: 0 0 10px rgba(255, 200, 60, 0.7), 0 2px 5px rgba(15, 35, 65, 0.55);
 }
 
-.odds {
-  margin-top: 8px;
-  font-size: 12.5px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  line-height: 1.45;
-  opacity: 0.96;
-  text-shadow: 0 2px 5px rgba(15, 35, 65, 0.55);
+/* ---------- VOLUME SLIDER (below level panel) ---------- */
+#volumePanel {
+  top: calc(178px + env(safe-area-inset-top));
+  right: calc(18px + env(safe-area-inset-right));
+  min-width: 250px;
+  padding: 10px 16px 12px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.volRow {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 11px; font-weight: 700; letter-spacing: 1.6px;
+  text-transform: uppercase; opacity: 0.88;
+}
+#volumeSlider {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 6px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #ffe27a 0%, #ffab26 100%);
+  outline: none; cursor: pointer;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+#volumeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffffff, #ffd75e 60%, #d89312);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 200, 60, 0.7);
+  transition: transform 0.15s ease;
+}
+#volumeSlider::-webkit-slider-thumb:active { transform: scale(1.15); }
+#volumeSlider::-moz-range-thumb {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffffff, #ffd75e 60%, #d89312);
+  border: 2px solid rgba(255, 255, 255, 0.9); cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 200, 60, 0.7);
+}
+#volumePct {
+  font-size: 11px; font-weight: 800; color: #ffe27a;
+  letter-spacing: 0.4px; text-align: right;
 }
 
-/* ---------- BOTTOM CENTER : BUTTONS ---------- */
+/* ---------- BOTTOM CENTER : buttons ---------- */
 #buttons {
   position: absolute;
-  bottom: 22px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  justify-content: center;
-  pointer-events: none;
+  bottom: calc(22px + env(safe-area-inset-bottom));
+  left: 50%; transform: translateX(-50%);
+  display: flex; gap: 14px; flex-wrap: wrap;
+  justify-content: center; pointer-events: none;
+  max-width: calc(100vw - 32px);
 }
-
 .btn {
-  pointer-events: auto;
-  position: relative;
+  pointer-events: auto; position: relative;
   border: 1.5px solid rgba(255, 255, 255, 0.5);
   border-radius: 20px;
-  padding: 11px 22px 12px;
-  min-width: 158px;
-  font-family: inherit;
-  font-weight: 800;
-  font-size: 14px;
-  letter-spacing: 0.9px;
-  color: #fff;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
+  padding: 11px 22px 12px; min-width: 190px;
+  font-family: inherit; font-weight: 800; font-size: 14px;
+  letter-spacing: 0.9px; color: #fff; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
   text-shadow: 0 2px 5px rgba(0, 0, 0, 0.42);
   box-shadow:
     0 10px 24px rgba(15, 40, 80, 0.3),
@@ -187,27 +178,18 @@ canvas:active { cursor: grabbing; }
   overflow: hidden;
   backdrop-filter: blur(10px) saturate(160%);
   -webkit-backdrop-filter: blur(10px) saturate(160%);
+  touch-action: manipulation;
 }
-
-/* glossy sheen */
 .btn::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
   height: 46%;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0));
-  border-radius: 20px 20px 40% 40%;
-  pointer-events: none;
+  border-radius: 20px 20px 40% 40%; pointer-events: none;
 }
-
 .btn .bSub {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  opacity: 0.94;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+  opacity: 0.95; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
-
 .btn:hover:not(:disabled) {
   transform: translateY(-3px);
   box-shadow:
@@ -215,41 +197,106 @@ canvas:active { cursor: grabbing; }
     inset 0 1px 0 rgba(255, 255, 255, 0.7),
     inset 0 -8px 18px rgba(0, 0, 0, 0.14);
 }
-
-.btn:active:not(:disabled) {
-  transform: translateY(1px) scale(0.975);
-}
-
+.btn:active:not(:disabled) { transform: translateY(1px) scale(0.975); }
 .btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  filter: grayscale(0.65) brightness(0.9);
+  opacity: 0.5; cursor: not-allowed;
+  filter: grayscale(0.7) brightness(0.9);
 }
-
-#btnSpawn   { background: linear-gradient(180deg, #86e05c 0%, #46ab44 100%); }
-#btnUpgrade { background: linear-gradient(180deg, #ffe07a 0%, #f0a410 100%); color: #5a3500; text-shadow: 0 1px 3px rgba(255, 255, 255, 0.4); }
-#btnUpgrade .bSub { text-shadow: none; }
-#btnAuto    { background: linear-gradient(180deg, #7cc9ff 0%, #2b86d6 100%); }
-
-/* ---------- FLOATING 3D WORLD POPUPS ---------- */
-#popups {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 20;
-  overflow: hidden;
+#btnSpawn { background: linear-gradient(180deg, #86e05c 0%, #46ab44 100%); }
+#btnUpgrade {
+  background: linear-gradient(180deg, #ffd86a 0%, #f0a410 100%);
+  color: #5a3500;
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.4);
 }
+#btnUpgrade .bSub { text-shadow: none; color: #6a4200; }
 
-.popup {
+/* ---------- SHOP BUTTON (bottom right) ---------- */
+#btnShop {
   position: absolute;
-  left: 0;
-  top: 0;
+  bottom: calc(22px + env(safe-area-inset-bottom));
+  right: calc(18px + env(safe-area-inset-right));
+  pointer-events: auto;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  padding: 11px 20px 12px;
+  min-width: 140px;
+  font-family: inherit; font-weight: 800; font-size: 14px;
+  letter-spacing: 0.9px; color: #fff; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.42);
+  box-shadow:
+    0 10px 24px rgba(15, 40, 80, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -8px 18px rgba(0, 0, 0, 0.14);
+  background: linear-gradient(180deg, #ff9ec4 0%, #c04a8a 100%);
+  transition: transform 0.11s ease, box-shadow 0.14s ease;
+  overflow: hidden;
+  backdrop-filter: blur(10px) saturate(160%);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  touch-action: manipulation;
+}
+#btnShop::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 46%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0));
+  border-radius: 20px 20px 40% 40%; pointer-events: none;
+}
+#btnShop:hover { transform: translateY(-3px); }
+#btnShop:active { transform: translateY(1px) scale(0.975); }
+#btnShop .bSub { font-size: 11px; font-weight: 700; opacity: 0.95; }
+#shopEggCount { color: #fff5c4; }
+
+/* ---------- HINT ---------- */
+#hint {
+  position: absolute;
+  bottom: calc(28px + env(safe-area-inset-bottom));
+  left: calc(22px + env(safe-area-inset-left));
+  font-size: 12px; font-weight: 700; letter-spacing: 0.6px;
+  color: rgba(255, 255, 255, 0.94);
+  text-shadow: 0 2px 6px rgba(15, 35, 65, 0.7);
+  pointer-events: none; opacity: 0.95; line-height: 1.55;
+  max-width: 240px;
+}
+#hint .hot { color: #ffe27a; }
+
+/* ============================================================
+   CINEMATIC LETTERBOX
+   ============================================================ */
+#letterTop, #letterBottom {
+  position: fixed; left: 0; right: 0;
+  height: 0; background: #000; z-index: 50;
+  transition: height 0.75s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+#letterTop { top: 0; }
+#letterBottom { bottom: 0; }
+body.cinematic #letterTop,
+body.cinematic #letterBottom { height: 11vh; }
+
+/* Hide most UI during cinematic for cleaner look */
+body.cinematic #statsPanel,
+body.cinematic #levelPanel,
+body.cinematic #volumePanel,
+body.cinematic #buttons,
+body.cinematic #btnShop,
+body.cinematic #hint {
+  opacity: 0.15;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+/* ============================================================
+   FLOATING POPUPS
+   ============================================================ */
+#popups {
+  position: fixed; inset: 0; pointer-events: none;
+  z-index: 20; overflow: hidden;
+}
+.popup {
+  position: absolute; left: 0; top: 0;
   font-family: 'Baloo 2', system-ui, sans-serif;
-  font-weight: 800;
-  font-size: 27px;
-  letter-spacing: 0.5px;
-  color: #ffd24a;
-  white-space: nowrap;
+  font-weight: 800; font-size: 27px; letter-spacing: 0.5px;
+  color: #ffd24a; white-space: nowrap;
   will-change: transform, opacity;
   text-shadow:
     0 0 12px rgba(255, 200, 70, 0.95),
@@ -259,10 +306,8 @@ canvas:active { cursor: grabbing; }
     2px -2px 0 rgba(96, 52, 0, 0.95),
     -2px 2px 0 rgba(96, 52, 0, 0.95);
 }
-
 .popup.egg {
-  color: #fff6cf;
-  font-size: 22px;
+  color: #fff6cf; font-size: 22px;
   text-shadow:
     0 0 14px rgba(255, 240, 180, 1),
     0 0 28px rgba(255, 200, 80, 0.8),
@@ -270,81 +315,330 @@ canvas:active { cursor: grabbing; }
     -2px -2px 0 rgba(120, 80, 0, 0.95);
 }
 
-/* ---------- TITLE / HELP ---------- */
-#hint {
-  position: absolute;
-  bottom: 24px;
-  left: 22px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.6px;
-  color: rgba(255, 255, 255, 0.92);
-  text-shadow: 0 2px 6px rgba(15, 35, 65, 0.6);
-  pointer-events: none;
-  opacity: 0.9;
-  line-height: 1.5;
+/* ============================================================
+   SHOP MODAL
+   ============================================================ */
+#shopModal {
+  position: fixed; inset: 0; z-index: 100;
+  display: none; align-items: center; justify-content: center;
+  background: rgba(8, 18, 40, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 20px;
+  animation: fadeIn 0.25s ease;
+  touch-action: none;
+}
+#shopModal.open { display: flex; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modalContent {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.08) 100%);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  border-radius: 28px;
+  box-shadow:
+    0 30px 80px rgba(10, 25, 55, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  width: min(720px, 100%);
+  max-height: min(760px, 88vh);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.35s cubic-bezier(0.34, 1.3, 0.64, 1);
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(15, 35, 65, 0.55);
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
 }
 
-/* ---------- RESPONSIVE ---------- */
-@media (max-width: 760px) {
-  .btn { min-width: 118px; padding: 9px 14px 10px; font-size: 12px; }
+.modalHeader {
+  padding: 20px 24px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+.modalTitle {
+  font-size: 24px; font-weight: 800; letter-spacing: 0.6px;
+  display: flex; align-items: center; gap: 12px;
+}
+.modalTitle .em { font-size: 28px; }
+
+.eggCounter {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255, 220, 100, 0.18);
+  border: 1.5px solid rgba(255, 220, 100, 0.5);
+  border-radius: 16px;
+  padding: 6px 14px;
+  font-weight: 800; font-size: 15px;
+  color: #ffe9b3;
+  text-shadow: 0 0 10px rgba(255, 200, 60, 0.6);
+}
+#shopEggs {
+  font-size: 19px;
+  color: #fff5c4;
+  font-variant-numeric: tabular-nums;
+}
+
+#shopClose {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  border-radius: 14px;
+  width: 40px; height: 40px;
+  color: #fff; font-size: 20px; font-weight: 800;
+  cursor: pointer; font-family: inherit;
+  transition: all 0.15s ease;
+  display: flex; align-items: center; justify-content: center;
+  touch-action: manipulation;
+}
+#shopClose:hover { background: rgba(255, 80, 80, 0.5); transform: scale(1.08); }
+#shopClose:active { transform: scale(0.94); }
+
+#shopItems {
+  padding: 18px 20px 22px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+#shopItems::-webkit-scrollbar { width: 8px; }
+#shopItems::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.shopItem {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.32);
+  border-radius: 18px;
+  padding: 14px 16px 16px;
+  display: flex; flex-direction: column; gap: 10px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+.shopItem:hover {
+  border-color: rgba(255, 220, 100, 0.65);
+  box-shadow: 0 8px 30px rgba(255, 200, 60, 0.18);
+}
+.shopItem.maxed {
+  background: linear-gradient(180deg, rgba(255, 220, 100, 0.22) 0%, rgba(255, 200, 60, 0.08) 100%);
+  border-color: rgba(255, 220, 100, 0.7);
+}
+
+.itemHead {
+  display: flex; align-items: center; gap: 10px;
+}
+.itemIcon {
+  font-size: 30px;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+  line-height: 1;
+}
+.itemName {
+  font-size: 17px; font-weight: 800;
+  letter-spacing: 0.3px; line-height: 1.15;
+}
+.itemTier {
+  font-size: 11.5px; font-weight: 700; opacity: 0.8;
+  letter-spacing: 0.6px; text-transform: uppercase;
+  margin-top: 1px;
+}
+.itemDesc {
+  font-size: 12.5px; font-weight: 600; opacity: 0.88;
+  line-height: 1.4;
+}
+.itemEffect {
+  font-size: 12.5px; font-weight: 800;
+  color: #ffe27a;
+  text-shadow: 0 0 10px rgba(255, 200, 60, 0.5);
+}
+.itemEffect .arrow { opacity: 0.6; margin: 0 5px; font-weight: 700; }
+
+.buyRow {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px;
+  margin-top: 4px;
+}
+.buyBtn {
+  flex: 1;
+  background: linear-gradient(180deg, #ffd86a 0%, #f0a410 100%);
+  color: #4a2d00;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  border-radius: 14px;
+  padding: 9px 14px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 13.5px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 5px 14px rgba(120, 70, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  transition: all 0.14s ease;
+  touch-action: manipulation;
+}
+.buyBtn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(120, 70, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.7); }
+.buyBtn:active:not(:disabled) { transform: translateY(1px) scale(0.98); }
+.buyBtn:disabled {
+  background: linear-gradient(180deg, #8c8c8c 0%, #5a5a5a 100%);
+  color: #ddd; cursor: not-allowed;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  opacity: 0.7;
+}
+.buyBtn.maxed {
+  background: linear-gradient(180deg, #b8f39a 0%, #62b83e 100%);
+  color: #1a3a08;
+}
+
+.barPips {
+  display: flex; gap: 3px; flex-wrap: wrap;
+  margin-top: 2px;
+}
+.pip {
+  width: 16px; height: 6px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.32);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+.pip.on {
+  background: linear-gradient(90deg, #ffe27a, #ffab26);
+  box-shadow: 0 0 6px rgba(255, 200, 60, 0.9);
+}
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+@media (max-width: 820px) {
+  .btn { min-width: 148px; padding: 9px 14px 10px; font-size: 12px; }
   .btn .bSub { font-size: 10px; }
   #statsPanel { transform: scale(0.88); transform-origin: top left; }
-  #levelPanel { transform: scale(0.88); transform-origin: top right; }
+  #levelPanel { transform: scale(0.82); transform-origin: top right; }
+  #volumePanel { top: calc(152px + env(safe-area-inset-top)); transform: scale(0.82); transform-origin: top right; }
   #hint { display: none; }
-  #buttons { bottom: 14px; gap: 9px; }
+  #buttons { bottom: calc(14px + env(safe-area-inset-bottom)); gap: 9px; }
+  #btnShop { bottom: calc(14px + env(safe-area-inset-bottom)); min-width: 100px; padding: 9px 12px 10px; font-size: 12px; }
   .popup { font-size: 21px; }
+  #shopItems { grid-template-columns: 1fr; padding: 14px; }
+  .modalTitle { font-size: 19px; }
+  #letterTop, #letterBottom { transition: height 0.5s ease; }
+  body.cinematic #letterTop, body.cinematic #letterBottom { height: 9vh; }
+}
+@media (max-width: 480px) {
+  #statsPanel { min-width: 0; padding: 9px 12px; }
+  .stat .val { font-size: 19px; }
+  .stat .lbl { font-size: 9px; letter-spacing: 1.2px; }
+  #levelPanel { min-width: 0; }
+  .rankName { font-size: 15px; }
+  #btnShop .bSub { display: none; }
 }
 </style>
 </head>
 <body>
 
 <!-- ============================================================
-     2D HUD OVERLAY (HTML/CSS — glassmorphism)
+     AUDIO ELEMENTS (MP3, placeholder files)
+     ============================================================ -->
+<audio id="bgMusic" loop preload="auto">
+  <source src="bg_music.mp3" type="audio/mpeg">
+</audio>
+<audio id="cocodrilloTheme" preload="auto">
+  <source src="cocodrillo_theme.mp3" type="audio/mpeg">
+</audio>
+
+<!-- ============================================================
+     CINEMATIC LETTERBOX
+     ============================================================ -->
+<div id="letterTop"></div>
+<div id="letterBottom"></div>
+
+<!-- ============================================================
+     2D HUD
      ============================================================ -->
 <div id="hud">
 
-  <!-- TOP LEFT: currency -->
+  <!-- Top-left stats -->
   <div class="panel" id="statsPanel">
-    <div class="stat" id="goldStat"><span class="icon">🪙</span><span id="goldValue">0</span></div>
-    <div class="stat" id="eggStat"><span class="icon">🥚</span><span id="eggValue">0</span></div>
+    <div class="stat" id="goldStat">
+      <span class="lbl">Złoto</span>
+      <span class="val"><span>🪙</span><span id="goldValue">0</span></span>
+    </div>
+    <div class="stat" id="eggStat">
+      <span class="lbl">Jajka Pollo</span>
+      <span class="val"><span>🥚</span><span id="eggValue">0</span></span>
+    </div>
   </div>
 
-  <!-- TOP RIGHT: fountain level -->
+  <!-- Top-right rank -->
   <div class="panel" id="levelPanel">
-    <div class="lvlTitle">Poziom Fontanny <b id="levelNum">1</b>/3</div>
+    <div class="lvlTitle">Ranga Cocodrillo</div>
+    <div class="rankName" id="rankName">COCODRILO NOWICJUSZ</div>
+    <div class="lvlMeta" id="lvlMeta">Poziom 1 / 15</div>
     <div class="bar"><div class="barFill" id="levelBar"></div></div>
-    <div class="odds" id="oddsText">Red Pollo → Green Croc 100%</div>
+    <div class="mult" id="multText">Mnożnik: ×1</div>
   </div>
 
-  <!-- BOTTOM CENTER: action buttons -->
+  <!-- Volume slider -->
+  <div class="panel" id="volumePanel">
+    <div class="volRow">
+      <span>🎵 Muzyka</span>
+      <span id="volumePct">40%</span>
+    </div>
+    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.4" aria-label="Głośność muzyki">
+  </div>
+
+  <!-- Bottom center buttons -->
   <div id="buttons">
     <button class="btn" id="btnSpawn">
-      🐔 SPAWN POLLO
-      <span class="bSub">Darmowe</span>
+      🐔 WYŚLIJ POLLO
+      <span class="bSub">1 lider + 5 kurczaków</span>
     </button>
     <button class="btn" id="btnUpgrade">
-      ⬆️ ULEPSZ FONTANNĘ
-      <span class="bSub" id="upgradeCost">30 🪙</span>
-    </button>
-    <button class="btn" id="btnAuto">
-      🤖 AUTO-SPAWNER
-      <span class="bSub" id="autoCost">110 🪙</span>
+      ✨ ULEPSZ FONTANNĘ
+      <span class="bSub" id="upgradeCost">50 🪙</span>
     </button>
   </div>
 
-  <!-- small hint -->
+  <!-- Shop button -->
+  <button id="btnShop">
+    🥚 SKLEPIK
+    <span class="bSub" id="shopEggCount">0 Jajek Pollo</span>
+  </button>
+
+  <!-- Hint -->
   <div id="hint">
-    Przeciągnij myszą — obrót kamery<br>
-    Scroll — przybliżenie
+    🎬 Kliknij <span class="hot">WYŚLIJ POLLO</span> aby odpalić sekwencję!<br>
+    🖱️ Przeciągnij — kamera · 🎡 Scroll — zoom<br>
+    ⌨️ <span class="hot">Spacja</span> — spawn · <span class="hot">U</span> — ulepsz
   </div>
 </div>
 
-<!-- floating "+1g" style popups get injected here -->
+<!-- Floating popups layer -->
 <div id="popups"></div>
 
 <!-- ============================================================
-     THREE.JS IMPORT MAP (CDN, no build tools)
+     SHOP MODAL
+     ============================================================ -->
+<div id="shopModal">
+  <div class="modalContent">
+    <div class="modal-header modalHeader">
+      <div class="modal-title modalTitle">
+        <span class="em">🥚</span>
+        Sklepik Pollo
+      </div>
+      <div class="eggCounter">
+        🐣 <span id="shopEggs">0</span>
+      </div>
+      <button id="shopClose" aria-label="Zamknij">✕</button>
+    </div>
+    <div id="shopItems"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     THREE.JS IMPORT MAP
      ============================================================ -->
 <script type="importmap">
 {
@@ -361,10 +655,9 @@ canvas:active { cursor: grabbing; }
 import * as THREE from 'three';
 
 /* ============================================================
-   1. MATH / RANDOM / GEOMETRY UTILITIES
+   1. MATH / GEOMETRY UTILITIES
    ============================================================ */
 
-/** Deterministic pseudo-random generator (so the world always looks the same). */
 let _seed = 987654321;
 function rand() {
   _seed = (_seed * 1664525 + 1013904223) >>> 0;
@@ -372,14 +665,12 @@ function rand() {
 }
 function randRange(a, b) { return a + rand() * (b - a); }
 function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+function lerp(a, b, t) { return a + (b - a) * t; }
+/** Framerate-independent exponential smoothing alpha. */
+function smoothAlpha(rate, dt) { return 1 - Math.exp(-rate * dt); }
 
-/** Reusable color scratch object to avoid allocations. */
 const _tmpColor = new THREE.Color();
 
-/**
- * Push a single flat-shaded triangle into raw position/color arrays.
- * Adds a tiny per-triangle brightness jitter for that hand-crafted low-poly feel.
- */
 function pushTri(pos, col, a, b, c, color, jitter = 0.06) {
   pos.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
   _tmpColor.set(color);
@@ -393,7 +684,6 @@ function pushTri(pos, col, a, b, c, color, jitter = 0.06) {
   }
 }
 
-/** Build a BufferGeometry (non-indexed, vertex-colored) from raw arrays. */
 function buildGeometry(pos, col) {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
@@ -402,10 +692,6 @@ function buildGeometry(pos, col) {
   return g;
 }
 
-/**
- * Convert any primitive geometry into a non-indexed, vertex-colored one.
- * Every triangle gets a slightly randomized shade -> richer low-poly look.
- */
 function colorize(geo, color, jitter = 0.07) {
   const g = geo.index ? geo.toNonIndexed() : geo;
   const count = g.attributes.position.count;
@@ -423,24 +709,17 @@ function colorize(geo, color, jitter = 0.07) {
   return g;
 }
 
-/**
- * Merge a list of non-indexed, vertex-colored geometries into one.
- * This is the key optimization: an entire chicken becomes ONE draw call.
- */
 function mergeGeos(list) {
   let total = 0;
   for (const g of list) total += g.attributes.position.count;
-
   const pos = new Float32Array(total * 3);
   const col = new Float32Array(total * 3);
   let off = 0;
-
   for (const g of list) {
     pos.set(g.attributes.position.array, off * 3);
     col.set(g.attributes.color.array, off * 3);
     off += g.attributes.position.count;
   }
-
   const out = new THREE.BufferGeometry();
   out.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   out.setAttribute('color', new THREE.BufferAttribute(col, 3));
@@ -461,19 +740,20 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 document.body.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0xbfe4ff, 62, 190);
+scene.fog = new THREE.Fog(0xbfe4ff, 70, 200);
 
-const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 600);
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 600);
 
-/* ---- Orbit-style camera state (custom, no external addon needed) ---- */
-const camState = {
+/* Default orbit pose */
+const DEFAULT_ORBIT = {
   target: new THREE.Vector3(0, 1.6, 0),
-  theta: 0,          // horizontal angle
-  phi: 0.98,         // vertical angle (0 = top, PI/2 = horizon)
-  radius: 27         // distance
+  theta: 0,
+  phi: 0.95,
+  radius: 27
 };
+const camState = { ...DEFAULT_ORBIT, target: DEFAULT_ORBIT.target.clone() };
 
-function updateCamera() {
+function applyOrbitCamera() {
   const { target, theta, phi, radius } = camState;
   camera.position.set(
     target.x + radius * Math.sin(phi) * Math.sin(theta),
@@ -482,197 +762,129 @@ function updateCamera() {
   );
   camera.lookAt(target);
 }
-updateCamera();
+applyOrbitCamera();
 
-/* ---- Lights ---- */
-const hemi = new THREE.HemisphereLight(0xcfeaff, 0x6b8f4a, 1.05);
+/* Lights */
+const hemi = new THREE.HemisphereLight(0xd8ecff, 0x6b8f4a, 1.1);
 scene.add(hemi);
 
 const sun = new THREE.DirectionalLight(0xfff4dd, 2.0);
 sun.position.set(15, 26, 13);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
-sun.shadow.camera.left = -28;
-sun.shadow.camera.right = 28;
-sun.shadow.camera.top = 28;
-sun.shadow.camera.bottom = -28;
+sun.shadow.camera.left = -30;
+sun.shadow.camera.right = 30;
+sun.shadow.camera.top = 30;
+sun.shadow.camera.bottom = -30;
 sun.shadow.camera.near = 1;
-sun.shadow.camera.far = 90;
+sun.shadow.camera.far = 95;
 sun.shadow.bias = -0.0012;
 sun.shadow.normalBias = 0.025;
-scene.add(sun);
-scene.add(sun.target);
-sun.target.position.set(0, 0, 0);
+scene.add(sun, sun.target);
 
-/* Warm bounce light from the vortex */
-const vortexLight = new THREE.PointLight(0xffb733, 2.4, 14, 2);
-vortexLight.position.set(0, 2.0, 0);
-scene.add(vortexLight);
+/* Cool blue light under fountain (water glow) */
+const waterLight = new THREE.PointLight(0x7ecdff, 1.8, 14, 2);
+waterLight.position.set(0, 1.5, 0);
+scene.add(waterLight);
 
-/* ============================================================
-   3. SHARED MATERIALS
-   ============================================================ */
-
+/* Materials */
 const MAT = {
-  /** Standard low-poly body material: vertex colors + flat shading. */
-  body: new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }),
-  /** Golden variant: same but glowing. */
-  gold: new THREE.MeshLambertMaterial({
-    vertexColors: true, flatShading: true,
-    emissive: 0x7a5200, emissiveIntensity: 1.0
-  }),
-  /** Sky dome. */
-  sky: null // assigned later
+  body: new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true })
 };
 
 /* ============================================================
-   4. WORLD CONSTRUCTION — SKY, ISLANDS, BARN, BRIDGES, FOUNTAIN
+   3. SKY DOME
    ============================================================ */
-
-/* ------------------------------------------------------------
-   4.1 SKY DOME (gradient vertex-colored backside sphere)
-   ------------------------------------------------------------ */
-function createSkyDome() {
-  const geo = new THREE.SphereGeometry(230, 22, 14);
+(function createSky() {
+  const geo = new THREE.SphereGeometry(240, 22, 14);
   const pos = geo.attributes.position;
   const colors = new Float32Array(pos.count * 3);
-
   const top = new THREE.Color(0x3f9fe0);
   const bottom = new THREE.Color(0xe4f4ff);
   const c = new THREE.Color();
-
   for (let i = 0; i < pos.count; i++) {
-    const t = clamp(pos.getY(i) / 230 * 0.5 + 0.5, 0, 1);
+    const t = clamp(pos.getY(i) / 240 * 0.5 + 0.5, 0, 1);
     c.copy(bottom).lerp(top, Math.pow(t, 0.85));
     colors[i * 3] = c.r;
     colors[i * 3 + 1] = c.g;
     colors[i * 3 + 2] = c.b;
   }
   geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
   const mat = new THREE.MeshBasicMaterial({
     vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false
   });
   const m = new THREE.Mesh(geo, mat);
   m.renderOrder = -1000;
-  return m;
-}
-scene.add(createSkyDome());
+  scene.add(m);
+})();
 
-/* ------------------------------------------------------------
-   4.2 FLOATING ISLAND
-   A hand-built low-poly island: flat grassy top, tapering rocky underside.
-   Vertex counts are deliberately tiny (10 segments x 5 rings).
-   ------------------------------------------------------------ */
+/* ============================================================
+   4. WORLD — ISLANDS, BARN, BRIDGES, FOUNTAIN, CLOUDS
+   ============================================================ */
+
 function createIslandGeometry(radius, depth, segments = 10) {
-
-  // Ring profile: [radiusFactor, yFactor, bandColor]
   const RINGS = [
-    { r: 1.00, y:  0.00, c: 0x7ec850 },  // top rim (grass)
-    { r: 0.99, y: -0.10, c: 0x63b03e },  // grass edge
-    { r: 0.90, y: -0.32, c: 0x8a6642 },  // dirt
-    { r: 0.68, y: -0.62, c: 0x775433 },  // darker dirt
-    { r: 0.34, y: -0.86, c: 0x5f4029 }   // deep rock
+    { r: 1.00, y:  0.00, c: 0x7ec850 },
+    { r: 0.99, y: -0.10, c: 0x63b03e },
+    { r: 0.90, y: -0.32, c: 0x8a6642 },
+    { r: 0.68, y: -0.62, c: 0x775433 },
+    { r: 0.34, y: -0.86, c: 0x5f4029 }
   ];
-
-  const pos = [];
-  const col = [];
-
-  // --- generate jittered ring points ---
+  const pos = [], col = [];
   const rings = [];
   for (let ri = 0; ri < RINGS.length; ri++) {
     const def = RINGS[ri];
     const pts = [];
     for (let s = 0; s < segments; s++) {
-      const a = (s / segments) * Math.PI * 2 + ri * 0.22; // twist each ring a bit
-      const j = 1 + (rand() - 0.5) * 0.22;                // radial jitter
+      const a = (s / segments) * Math.PI * 2 + ri * 0.22;
+      const j = 1 + (rand() - 0.5) * 0.22;
       const rr = def.r * radius * j;
       const yy = def.y * depth * (1 + (rand() - 0.5) * 0.18);
       pts.push(new THREE.Vector3(Math.cos(a) * rr, yy, Math.sin(a) * rr));
     }
     rings.push(pts);
   }
-
-  // --- flat grassy top cap (fan) ---
   const center = new THREE.Vector3(0, 0, 0);
   for (let s = 0; s < segments; s++) {
-    const a = rings[0][s];
-    const b = rings[0][(s + 1) % segments];
-    // winding (center, b, a) → normal points UP
-    pushTri(pos, col, center, b, a, 0x8ed158, 0.09);
+    pushTri(pos, col, center, rings[0][(s + 1) % segments], rings[0][s], 0x8ed158, 0.09);
   }
-
-  // --- side bands ---
   for (let ri = 0; ri < RINGS.length - 1; ri++) {
     for (let s = 0; s < segments; s++) {
       const s2 = (s + 1) % segments;
-      const a = rings[ri][s];
-      const b = rings[ri][s2];
-      const c = rings[ri + 1][s2];
-      const d = rings[ri + 1][s];
+      const a = rings[ri][s], b = rings[ri][s2];
+      const c = rings[ri + 1][s2], d = rings[ri + 1][s];
       const color = RINGS[ri + 1].c;
       pushTri(pos, col, a, b, c, color, 0.11);
       pushTri(pos, col, a, c, d, color, 0.11);
     }
   }
-
-  // --- bottom tip (rocky point) ---
   const tip = new THREE.Vector3(0, -1.18 * depth, 0);
   const last = rings[RINGS.length - 1];
   for (let s = 0; s < segments; s++) {
-    const a = last[s];
-    const b = last[(s + 1) % segments];
-    pushTri(pos, col, a, b, tip, 0x51392a, 0.11); // placeholder replaced below
+    pushTri(pos, col, last[s], last[(s + 1) % segments], tip, 0x51392a, 0.11);
   }
-
   return buildGeometry(pos, col);
 }
 
-/* Small fix — the line above intentionally keeps the API tidy; we rebuild the
-   bottom tip properly here to avoid any typo colour leaking into the palette. */
-function createIslandGeometryFixed(radius, depth, segments = 10) {
-  const geo = createIslandGeometry(radius, depth, segments);
-  // Recolor the very bottom vertices (below a threshold) to a dark rock tone.
-  const p = geo.attributes.position;
-  const c = geo.attributes.color;
-  const rock = new THREE.Color(0x51392a);
-  for (let i = 0; i < p.count; i++) {
-    if (p.getY(i) < -0.62 * depth) {
-      const f = 1 + (rand() - 0.5) * 0.14;
-      c.setXYZ(i, rock.r * f, rock.g * f, rock.b * f);
-    }
-  }
-  c.needsUpdate = true;
-  return geo;
-}
-
-/** Create an island mesh + tiny decorative rocks/grass tufts on top. */
-function createIsland(x, z, radius, depth, seedOffset = 0) {
+function createIsland(x, z, radius, depth) {
   const group = new THREE.Group();
   group.position.set(x, 0, z);
-
-  const geo = createIslandGeometryFixed(radius, depth);
+  const geo = createIslandGeometry(radius, depth);
   const island = new THREE.Mesh(geo, MAT.body);
   island.receiveShadow = true;
   island.castShadow = true;
   group.add(island);
 
-  // --- decorative grass tufts / small rocks on the plateau ---
   const decorParts = [];
-  const tuftCount = 9;
-  for (let i = 0; i < tuftCount; i++) {
+  for (let i = 0; i < 9; i++) {
     const a = rand() * Math.PI * 2;
     const r = rand() * radius * 0.78;
-    const px = Math.cos(a) * r;
-    const pz = Math.sin(a) * r;
-    // small pyramid "bush"
     const h = randRange(0.22, 0.42);
     const bush = new THREE.ConeGeometry(randRange(0.12, 0.2), h, 5);
     bush.rotateY(rand() * 6.28);
-    bush.translate(px, h * 0.5, pz);
+    bush.translate(Math.cos(a) * r, h * 0.5, Math.sin(a) * r);
     decorParts.push(colorize(bush, rand() > 0.5 ? 0x5fa83a : 0x74c24a, 0.14));
   }
-  // a couple of little grey rocks
   for (let i = 0; i < 4; i++) {
     const a = rand() * Math.PI * 2;
     const r = rand() * radius * 0.8;
@@ -690,30 +902,22 @@ function createIsland(x, z, radius, depth, seedOffset = 0) {
   return group;
 }
 
-/* ------------------------------------------------------------
-   4.3 LOW-POLY BARN  (image_0 style: red box + pitched roof)
-   ------------------------------------------------------------ */
-/** Triangular prism helper (used for the roof). */
+/* Prism geometry for the barn roof */
 function createPrismGeometry(w, h, d, color) {
   const pos = [], col = [];
   const x = w / 2, z = d / 2;
-
-  const A = new THREE.Vector3(-x, 0,  z); // front-left
-  const B = new THREE.Vector3( x, 0,  z); // front-right
-  const C = new THREE.Vector3( 0, h,  z); // front-apex
-  const D = new THREE.Vector3(-x, 0, -z); // back-left
-  const E = new THREE.Vector3( x, 0, -z); // back-right
-  const F = new THREE.Vector3( 0, h, -z); // back-apex
-
-  pushTri(pos, col, A, B, C, color, 0.06); // front gable
-  pushTri(pos, col, E, D, F, color, 0.06); // back gable
-  pushTri(pos, col, D, A, C, color, 0.06); // left slope
+  const A = new THREE.Vector3(-x, 0,  z), B = new THREE.Vector3( x, 0,  z);
+  const C = new THREE.Vector3( 0, h,  z);
+  const D = new THREE.Vector3(-x, 0, -z), E = new THREE.Vector3( x, 0, -z);
+  const F = new THREE.Vector3( 0, h, -z);
+  pushTri(pos, col, A, B, C, color, 0.06);
+  pushTri(pos, col, E, D, F, color, 0.06);
+  pushTri(pos, col, D, A, C, color, 0.06);
   pushTri(pos, col, D, C, F, color, 0.06);
-  pushTri(pos, col, B, E, F, color, 0.06); // right slope
+  pushTri(pos, col, B, E, F, color, 0.06);
   pushTri(pos, col, B, F, C, color, 0.06);
-  pushTri(pos, col, A, D, E, color, 0.06); // underside
+  pushTri(pos, col, A, D, E, color, 0.06);
   pushTri(pos, col, A, E, B, color, 0.06);
-
   return buildGeometry(pos, col);
 }
 
@@ -721,100 +925,63 @@ function createBarn(x, z, rotY = 0) {
   const group = new THREE.Group();
   group.position.set(x, 0, z);
   group.rotation.y = rotY;
-
   const W = 2.9, H = 1.85, D = 2.45;
   const parts = [];
-
-  // --- main walls ---
   parts.push(colorize(new THREE.BoxGeometry(W, H, D).translate(0, H / 2, 0), 0xc0392b, 0.08));
-
-  // --- light trim around the base ---
   parts.push(colorize(new THREE.BoxGeometry(W + 0.1, 0.17, D + 0.1).translate(0, 0.085, 0), 0xf3ede2, 0.03));
-
-  // --- vertical corner beams (darker wood) ---
-  const beamC = 0x8e2b22;
   const corners = [
     [ W / 2 - 0.08,  D / 2 - 0.08], [-W / 2 + 0.08,  D / 2 - 0.08],
     [ W / 2 - 0.08, -D / 2 + 0.08], [-W / 2 + 0.08, -D / 2 + 0.08]
   ];
   for (const [cx, cz] of corners) {
-    parts.push(colorize(new THREE.BoxGeometry(0.17, H, 0.17).translate(cx, H / 2, cz), beamC, 0.05));
+    parts.push(colorize(new THREE.BoxGeometry(0.17, H, 0.17).translate(cx, H / 2, cz), 0x8e2b22, 0.05));
   }
-
-  // --- pitched roof ---
   const roof = createPrismGeometry(W + 0.6, 1.15, D + 0.5, 0x8e2b22);
   roof.translate(0, H, 0);
   parts.push(roof);
-
-  // --- roof ridge highlight ---
   parts.push(colorize(new THREE.BoxGeometry(W + 0.66, 0.1, 0.16).translate(0, H + 1.16, 0), 0xa5342a, 0.05));
-
-  // --- big front door (dark wood) ---
   parts.push(colorize(new THREE.BoxGeometry(1.05, 1.22, 0.1).translate(0, 0.61, D / 2 + 0.03), 0x5c3a1e, 0.06));
   parts.push(colorize(new THREE.BoxGeometry(0.08, 1.22, 0.06).translate(0, 0.61, D / 2 + 0.08), 0x3e2513, 0.05));
-
-  // --- hay-loft window above the door ---
   parts.push(colorize(new THREE.BoxGeometry(0.72, 0.62, 0.1).translate(0, H * 0.78, D / 2 + 0.03), 0x4a2c14, 0.06));
   parts.push(colorize(new THREE.BoxGeometry(0.78, 0.1, 0.12).translate(0, H * 0.78 + 0.28, D / 2 + 0.06), 0xf3ede2, 0.03));
   parts.push(colorize(new THREE.BoxGeometry(0.78, 0.1, 0.12).translate(0, H * 0.78 - 0.28, D / 2 + 0.06), 0xf3ede2, 0.03));
   parts.push(colorize(new THREE.BoxGeometry(0.1, 0.62, 0.12).translate(0, H * 0.78, D / 2 + 0.06), 0xf3ede2, 0.03));
-
-  // --- side window ---
   parts.push(colorize(new THREE.BoxGeometry(0.1, 0.5, 0.5).translate(W / 2 + 0.04, H * 0.62, 0), 0xf3ede2, 0.03));
   parts.push(colorize(new THREE.BoxGeometry(0.12, 0.36, 0.36).translate(W / 2 + 0.07, H * 0.62, 0), 0x2b3a4a, 0.05));
-
-  // --- little chimney ---
   parts.push(colorize(new THREE.BoxGeometry(0.34, 0.85, 0.34).translate(-W * 0.28, H + 1.15, -D * 0.2), 0x6b4a34, 0.07));
-
   const mesh = new THREE.Mesh(mergeGeos(parts), MAT.body);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
+  mesh.castShadow = true; mesh.receiveShadow = true;
   group.add(mesh);
-
   scene.add(group);
   return group;
 }
 
-/* ------------------------------------------------------------
-   4.4 LOW-POLY WOODEN BRIDGE
-   Planks + rope railings, merged into a single mesh.
-   ------------------------------------------------------------ */
 function createBridge(ax, az, bx, bz, width) {
   const dx = bx - ax, dz = bz - az;
   const len = Math.hypot(dx, dz);
-  const angle = Math.atan2(-dz, dx); // rotate +X axis onto the bridge direction
-
+  const angle = Math.atan2(-dz, dx);
   const group = new THREE.Group();
   group.position.set((ax + bx) / 2, 0, (az + bz) / 2);
   group.rotation.y = angle;
-
   const parts = [];
-
-  // --- deck planks ---
   const plankCount = Math.max(3, Math.round(len / 0.44));
   for (let i = 0; i <= plankCount; i++) {
     const px = -len / 2 + (i / plankCount) * len;
     const shade = (i % 2 === 0) ? 0xa9743f : 0x96663a;
     parts.push(colorize(new THREE.BoxGeometry(0.31, 0.11, width).translate(px, -0.055, 0), shade, 0.13));
   }
-
-  // --- two long support beams underneath ---
   for (const side of [-1, 1]) {
     parts.push(colorize(
       new THREE.BoxGeometry(len, 0.14, 0.16).translate(0, -0.17, side * (width / 2 - 0.1)),
       0x6d4a29, 0.08
     ));
   }
-
-  // --- rope railings (thin 4-sided cylinders) ---
   for (const side of [-1, 1]) {
     const rope = new THREE.CylinderGeometry(0.035, 0.035, len, 4);
     rope.rotateZ(Math.PI / 2);
     rope.translate(0, 0.63, side * (width / 2));
     parts.push(colorize(rope, 0x8a6b45, 0.08));
   }
-
-  // --- railing posts ---
   const postCount = Math.max(2, Math.round(len / 0.85));
   for (let i = 0; i <= postCount; i++) {
     const px = -len / 2 + (i / postCount) * len;
@@ -825,193 +992,203 @@ function createBridge(ax, az, bx, bz, width) {
       ));
     }
   }
-
   const mesh = new THREE.Mesh(mergeGeos(parts), MAT.body);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
+  mesh.castShadow = true; mesh.receiveShadow = true;
   group.add(mesh);
-
   scene.add(group);
   return group;
 }
 
-/* ------------------------------------------------------------
-   4.5 THE TRANSFORMATION FOUNTAIN  (stone base + golden vortex)
-   ------------------------------------------------------------ */
-/** Build the swirling funnel-shaped vortex mesh. */
-function createVortexGeometry() {
-  const pos = [], col = [];
-  const RINGS = 15, SEG = 13;
-  const topY = 1.15, botY = -0.55;
-  const topR = 1.35, botR = 0.1;
-
-  const rings = [];
-  for (let r = 0; r <= RINGS; r++) {
-    const t = r / RINGS;
-    const rad = botR + (topR - botR) * Math.pow(1 - t, 0.85);
-    const y = topY + (botY - topY) * t;
-    const twist = t * Math.PI * 2.9;  // <- this spiral twist makes it look like a whirlpool
-    const pts = [];
-    for (let s = 0; s < SEG; s++) {
-      const a = (s / SEG) * Math.PI * 2 + twist;
-      const wob = 1 + Math.sin(a * 2 + t * 7.5) * 0.08;
-      pts.push(new THREE.Vector3(
-        Math.cos(a) * rad * wob,
-        y + Math.sin(a * 3 + t * 6) * 0.075,
-        Math.sin(a) * rad * wob
-      ));
-    }
-    rings.push(pts);
-  }
-
-  const cTop = new THREE.Color(0xfff8d0);
-  const cBot = new THREE.Color(0xff7d0a);
-
-  for (let r = 0; r < RINGS; r++) {
-    const t = r / RINGS;
-    const shade = cTop.clone().lerp(cBot, Math.pow(t, 0.75));
-    for (let s = 0; s < SEG; s++) {
-      const s2 = (s + 1) % SEG;
-      const a = rings[r][s];
-      const b = rings[r][s2];
-      const c = rings[r + 1][s2];
-      const d = rings[r + 1][s];
-      pushTri(pos, col, a, b, c, shade, 0.14);
-      pushTri(pos, col, a, c, d, shade, 0.14);
-    }
-  }
-  return buildGeometry(pos, col);
-}
+/* ============================================================
+   4.5 FOUNTAIN — LIGHT BLUE TRANSPARENT WATER DOME
+   (replaces the old volcanic vortex)
+   ============================================================ */
 
 const fountainGroup = new THREE.Group();
 scene.add(fountainGroup);
 
-function createFountain() {
+/* --- Stone base --- */
+(function buildBase() {
   const parts = [];
-
-  // --- stone base tiers ---
-  parts.push(colorize(new THREE.CylinderGeometry(1.95, 2.15, 0.52, 9).translate(0, 0.26, 0), 0x9aa0a6, 0.08));
-  parts.push(colorize(new THREE.CylinderGeometry(1.7, 1.88, 0.36, 9).translate(0, 0.70, 0), 0xb4babf, 0.08));
-
-  // --- decorative golden rim (low-poly torus) ---
+  parts.push(colorize(new THREE.CylinderGeometry(1.95, 2.15, 0.52, 9).translate(0, 0.26, 0), 0xb8c2cc, 0.08));
+  parts.push(colorize(new THREE.CylinderGeometry(1.7, 1.88, 0.36, 9).translate(0, 0.70, 0), 0xd0d8e0, 0.08));
   const rim = new THREE.TorusGeometry(1.58, 0.13, 4, 10);
   rim.rotateX(Math.PI / 2);
   rim.translate(0, 0.90, 0);
-  parts.push(colorize(rim, 0xd9a334, 0.09));
-
-  // --- carved stone blocks around the base ---
+  parts.push(colorize(rim, 0x9fd0e8, 0.09));
   for (let i = 0; i < 9; i++) {
     const a = (i / 9) * Math.PI * 2;
     const r = 2.12;
     const blk = new THREE.BoxGeometry(0.34, 0.32, 0.34);
     blk.rotateY(-a);
     blk.translate(Math.cos(a) * r, 0.16, Math.sin(a) * r);
-    parts.push(colorize(blk, 0x868c92, 0.12));
+    parts.push(colorize(blk, 0xa8b2bc, 0.12));
   }
-
-  // --- four small stone pillars with floating gold caps ---
   for (let i = 0; i < 4; i++) {
     const a = (i / 4) * Math.PI * 2 + Math.PI / 4;
     const r = 1.62;
-    const px = Math.cos(a) * r;
-    const pz = Math.sin(a) * r;
-    parts.push(colorize(new THREE.CylinderGeometry(0.1, 0.13, 0.85, 6).translate(px, 0.43, pz), 0x8d939a, 0.09));
-    parts.push(colorize(new THREE.OctahedronGeometry(0.14, 0).translate(px, 0.98, pz), 0xffcf4d, 0.06));
+    parts.push(colorize(new THREE.CylinderGeometry(0.1, 0.13, 0.85, 6).translate(Math.cos(a) * r, 0.43, Math.sin(a) * r), 0xb0bac4, 0.09));
+    parts.push(colorize(new THREE.OctahedronGeometry(0.14, 0).translate(Math.cos(a) * r, 0.98, Math.sin(a) * r), 0xa8e4ff, 0.06));
   }
-
   const base = new THREE.Mesh(mergeGeos(parts), MAT.body);
-  base.castShadow = true;
-  base.receiveShadow = true;
+  base.castShadow = true; base.receiveShadow = true;
   fountainGroup.add(base);
+})();
 
-  /* --- THE VORTEX (two layers for depth) --- */
-  const vGeo = createVortexGeometry();
+/* --- Water dome (half-sphere, vertex-displaced per frame) --- */
+const DOME_RADIUS = 1.65;
+const domeGeo = new THREE.SphereGeometry(DOME_RADIUS, 28, 16, 0, Math.PI * 2, 0, Math.PI * 0.55);
+const domeBasePos = new Float32Array(domeGeo.attributes.position.array); // original positions
+const domePosAttr = domeGeo.attributes.position;
 
-  const vortexCore = new THREE.Mesh(vGeo, new THREE.MeshBasicMaterial({
-    vertexColors: true,
-    side: THREE.DoubleSide,
+const domeMat = new THREE.MeshPhongMaterial({
+  color: 0x8fd4ff,
+  emissive: 0x1a5f9c,
+  emissiveIntensity: 0.55,
+  transparent: true,
+  opacity: 0.62,
+  shininess: 95,
+  specular: 0xffffff,
+  side: THREE.DoubleSide,
+  depthWrite: false,
+  flatShading: false
+});
+const waterDome = new THREE.Mesh(domeGeo, domeMat);
+waterDome.position.y = 1.05;
+waterDome.renderOrder = 2;
+fountainGroup.add(waterDome);
+
+/* --- Inner glow core (bright blue, hidden inside dome) --- */
+const waterCore = new THREE.Mesh(
+  new THREE.SphereGeometry(0.85, 16, 12),
+  new THREE.MeshBasicMaterial({
+    color: 0xbfe8ff,
     transparent: true,
-    opacity: 0.96
-  }));
-  vortexCore.position.y = 0.9;
-  vortexCore.renderOrder = 2;
-  fountainGroup.add(vortexCore);
-
-  const vortexShell = new THREE.Mesh(vGeo, new THREE.MeshBasicMaterial({
-    vertexColors: true,
-    side: THREE.DoubleSide,
-    transparent: true,
-    opacity: 0.32,
+    opacity: 0.55,
     blending: THREE.AdditiveBlending,
     depthWrite: false
-  }));
-  vortexShell.position.y = 0.9;
-  vortexShell.scale.set(1.28, 1.12, 1.28);
-  vortexShell.renderOrder = 3;
-  fountainGroup.add(vortexShell);
+  })
+);
+waterCore.position.y = 1.35;
+waterCore.renderOrder = 1;
+fountainGroup.add(waterCore);
 
-  /* --- floating golden shards orbiting the vortex --- */
-  const shardGeo = new THREE.TetrahedronGeometry(0.11, 0);
-  const shardMat = new THREE.MeshBasicMaterial({ color: 0xffd964 });
-  const shards = [];
-  for (let i = 0; i < 7; i++) {
-    const s = new THREE.Mesh(shardGeo, shardMat);
-    s.userData = {
-      angle: (i / 7) * Math.PI * 2,
-      radius: 1.35 + rand() * 0.5,
-      speed: 1.4 + rand() * 1.4,
-      yOff: rand() * 1.5,
-      bob: rand() * 6.28
-    };
-    fountainGroup.add(s);
-    shards.push(s);
-  }
-
-  return { vortexCore, vortexShell, shards };
-}
-
-const fountain = createFountain();
-
-/* ------------------------------------------------------------
-   4.6 PULSING GROUND RINGS below the fountain
-   ------------------------------------------------------------ */
-const pulseRings = [];
-for (let i = 0; i < 3; i++) {
-  const rg = new THREE.RingGeometry(0.98, 1.14, 32);
+/* --- Ripple rings on the water surface --- */
+const ripples = [];
+for (let i = 0; i < 4; i++) {
+  const rg = new THREE.RingGeometry(0.4, 0.55, 24);
   rg.rotateX(-Math.PI / 2);
   const rm = new THREE.Mesh(rg, new THREE.MeshBasicMaterial({
-    color: 0xffd75e,
+    color: 0xd8f2ff,
     transparent: true,
     opacity: 0.7,
     side: THREE.DoubleSide,
     depthWrite: false,
     blending: THREE.AdditiveBlending
   }));
-  rm.position.set(0, 0.07, 0);
-  rm.userData.phase = i / 3;
-  scene.add(rm);
-  pulseRings.push(rm);
+  rm.position.y = 1.06;
+  rm.userData.phase = i * 0.25;
+  fountainGroup.add(rm);
+  ripples.push(rm);
 }
 
-/* ------------------------------------------------------------
-   4.7 BACKGROUND: LOW-POLY CLOUDS + FLOATING ROCKS
-   ------------------------------------------------------------ */
-const clouds = [];
+/* --- Small floating droplets bobbing around the dome --- */
+const droplets = [];
+const dropGeo = new THREE.SphereGeometry(0.075, 6, 5);
+const dropMat = new THREE.MeshLambertMaterial({
+  color: 0xa8e4ff,
+  emissive: 0x3a8fc0,
+  emissiveIntensity: 0.8,
+  flatShading: true,
+  transparent: true,
+  opacity: 0.9
+});
+for (let i = 0; i < 9; i++) {
+  const d = new THREE.Mesh(dropGeo, dropMat);
+  d.userData = {
+    angle: (i / 9) * Math.PI * 2,
+    radius: 1.65 + rand() * 0.35,
+    yBase: 1.15 + rand() * 0.7,
+    bobPhase: rand() * 6.28,
+    speed: 0.9 + rand() * 0.7
+  };
+  fountainGroup.add(d);
+  droplets.push(d);
+}
+
+/* --- Ground glow ring (pulsing) --- */
+const groundGlow = new THREE.Mesh(
+  new THREE.RingGeometry(1.9, 2.4, 32).rotateX(-Math.PI / 2),
+  new THREE.MeshBasicMaterial({
+    color: 0x9fd8ff,
+    transparent: true,
+    opacity: 0.5,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  })
+);
+groundGlow.position.y = 0.03;
+fountainGroup.add(groundGlow);
+
+/* --- Per-frame water animation --- */
+function animateFountain(time) {
+  // Wave displacement
+  const pos = domePosAttr;
+  const base = domeBasePos;
+  for (let i = 0; i < pos.count; i++) {
+    const x = base[i * 3];
+    const y = base[i * 3 + 1];
+    const z = base[i * 3 + 2];
+    // Two overlapping sine waves for that meme "mesh movement"
+    const wave =
+      Math.sin(time * 2.2 + x * 3.2 + z * 3.2) * 0.075 +
+      Math.sin(time * 3.7 + y * 4.5) * 0.045 +
+      Math.sin(time * 1.4 + x * 1.5 - z * 1.5) * 0.06;
+    pos.setY(i, y + wave);
+  }
+  pos.needsUpdate = true;
+  domeGeo.computeVertexNormals();
+
+  // Ripples expanding
+  for (const r of ripples) {
+    const t = ((time * 0.75 + r.userData.phase) % 1);
+    const s = 0.4 + t * 2.2;
+    r.scale.set(s, 1, s);
+    r.material.opacity = (1 - t) * 0.75;
+  }
+
+  // Droplets orbit & bob
+  for (const d of droplets) {
+    const u = d.userData;
+    u.angle += u.speed * 0.012;
+    const y = u.yBase + Math.sin(time * 2.0 + u.bobPhase) * 0.22;
+    d.position.set(Math.cos(u.angle) * u.radius, y, Math.sin(u.angle) * u.radius);
+  }
+
+  // Core pulse
+  const pulse = 1 + Math.sin(time * 2.4) * 0.08;
+  waterCore.scale.setScalar(pulse);
+  waterCore.material.opacity = 0.45 + Math.sin(time * 2.4) * 0.15;
+
+  // Ground glow subtle pulse
+  groundGlow.material.opacity = 0.35 + Math.sin(time * 1.5) * 0.15;
+}
+
+/* ============================================================
+   4.6 BACKGROUND CLOUDS & FLOATING ROCKS
+   ============================================================ */
+const clouds = [], rocks = [];
+
 function createCloud(x, y, z, scale) {
   const g = new THREE.Group();
   const parts = [];
   const blobs = 3 + Math.floor(rand() * 3);
   for (let i = 0; i < blobs; i++) {
     const box = new THREE.BoxGeometry(
-      randRange(1.0, 2.0) * scale,
-      randRange(0.6, 1.0) * scale,
-      randRange(0.9, 1.7) * scale
+      randRange(1.0, 2.0) * scale, randRange(0.6, 1.0) * scale, randRange(0.9, 1.7) * scale
     );
-    box.translate(
-      randRange(-1.2, 1.2) * scale,
-      randRange(-0.25, 0.35) * scale,
-      randRange(-0.9, 0.9) * scale
-    );
+    box.translate(randRange(-1.2, 1.2) * scale, randRange(-0.25, 0.35) * scale, randRange(-0.9, 0.9) * scale);
     parts.push(colorize(box, 0xffffff, 0.04));
   }
   const mesh = new THREE.Mesh(mergeGeos(parts), MAT.body);
@@ -1020,20 +1197,13 @@ function createCloud(x, y, z, scale) {
   g.userData = { baseY: y, bobPhase: rand() * 6.28, driftSpeed: randRange(0.15, 0.45) };
   scene.add(g);
   clouds.push(g);
-  return g;
 }
 
-const rocks = [];
 function createFloatingRock(x, y, z, scale) {
   const geo = new THREE.IcosahedronGeometry(scale, 0);
-  // squash and jitter
   const p = geo.attributes.position;
   for (let i = 0; i < p.count; i++) {
-    p.setXYZ(i,
-      p.getX(i) * randRange(0.75, 1.25),
-      p.getY(i) * randRange(0.55, 0.9),
-      p.getZ(i) * randRange(0.75, 1.25)
-    );
+    p.setXYZ(i, p.getX(i) * randRange(0.75, 1.25), p.getY(i) * randRange(0.55, 0.9), p.getZ(i) * randRange(0.75, 1.25));
   }
   const g = colorize(geo, 0x8b7355, 0.15);
   const m = new THREE.Mesh(g, MAT.body);
@@ -1042,30 +1212,17 @@ function createFloatingRock(x, y, z, scale) {
   m.userData = { baseY: y, bobPhase: rand() * 6.28, spin: randRange(-0.3, 0.3) };
   scene.add(m);
   rocks.push(m);
-  return m;
 }
 
-/* ------------------------------------------------------------
-   4.8 BUILD THE WHOLE WORLD
-   ------------------------------------------------------------ */
+/* ---- Build world ---- */
+createIsland(-12, 0, 4.6, 3.2);
+createIsland(  0, 0, 5.0, 3.8);
+createIsland( 12, 0, 4.6, 3.2);
 
-// --- the three islands ---
-const ISLAND_LEFT   = { x: -12, z: 0, r: 4.6 };
-const ISLAND_CENTER = { x:   0, z: 0, r: 5.0 };
-const ISLAND_RIGHT  = { x:  12, z: 0, r: 4.6 };
-
-createIsland(ISLAND_LEFT.x,   ISLAND_LEFT.z,   ISLAND_LEFT.r,   3.2);
-createIsland(ISLAND_CENTER.x, ISLAND_CENTER.z, ISLAND_CENTER.r, 3.8);
-createIsland(ISLAND_RIGHT.x,  ISLAND_RIGHT.z,  ISLAND_RIGHT.r,  3.2);
-
-// --- barn on the left island ---
 createBarn(-13.1, -1.9, 0.22);
+createBridge(-8.6, 0, -4.4, 0, 1.9);
+createBridge( 4.4, 0,  8.6, 0, 1.9);
 
-// --- two bridges connecting the islands ---
-createBridge(-8.6, 0, -4.4, 0, 1.9);   // left  -> center
-createBridge( 4.4, 0,  8.6, 0, 1.9);   // center -> right
-
-// --- background clouds ---
 createCloud(-22, 16, -18, 1.5);
 createCloud( 18, 20, -24, 1.9);
 createCloud(  2, 24, -30, 1.6);
@@ -1074,7 +1231,6 @@ createCloud(-16, 21,  14, 1.4);
 createCloud(  6, 18,  20, 1.2);
 createCloud(-30, 12,  -2, 1.4);
 
-// --- floating background rocks ---
 createFloatingRock(-24,  6, -12, 0.9);
 createFloatingRock( 22,  8, -14, 1.1);
 createFloatingRock( -6, 12, -20, 0.7);
@@ -1082,56 +1238,38 @@ createFloatingRock( 14,  5,  16, 0.85);
 createFloatingRock(-18,  9,  16, 0.75);
 
 /* ============================================================
-   5. PROCEDURAL CHARACTER MODELS
+   5. CHARACTER MODELS — 6 POLLO + 6 COCODRILO COLORS
    ============================================================ */
 
-/* ------------------------------------------------------------
-   5.1 POLLO (chicken) — built entirely from boxes, cones & pyramids.
-   The model faces +Z. Origin is at the feet (y = 0).
-   Three color variants: Red (base), Blue, Golden.
-   ------------------------------------------------------------ */
-const POLLO_PALETTES = {
-  red:    { body: 0xd9473a, wing: 0xb03528, tail: 0x8e2419, comb: 0xff3b30, beak: 0xf5a623, leg: 0xe08a1e },
-  blue:   { body: 0x4a90d9, wing: 0x3572b0, tail: 0x27568a, comb: 0xff4d4d, beak: 0xf5a623, leg: 0xe08a1e },
-  golden: { body: 0xffcf40, wing: 0xe8a71c, tail: 0xc98a08, comb: 0xff4d4d, beak: 0xffe066, leg: 0xffb733 }
+const CHICKEN_PALETTES = {
+  white:  { body: 0xf8f8f0, wing: 0xdcdcd0, tail: 0xc8c8bc, comb: 0xff4040, beak: 0xf5a623, leg: 0xe08a1e },
+  red:    { body: 0xd9473a, wing: 0xb03528, tail: 0x8e2419, comb: 0xff5555, beak: 0xf5a623, leg: 0xe08a1e },
+  blue:   { body: 0x4a90d9, wing: 0x3572b0, tail: 0x27568a, comb: 0xff5555, beak: 0xf5a623, leg: 0xe08a1e },
+  yellow: { body: 0xf5d020, wing: 0xd9b010, tail: 0xb89000, comb: 0xff5555, beak: 0xf5a623, leg: 0xe08a1e },
+  green:  { body: 0x5fa83a, wing: 0x4a8a2e, tail: 0x3a6a22, comb: 0xff5555, beak: 0xf5a623, leg: 0xe08a1e },
+  pink:   { body: 0xff8fc4, wing: 0xe06aa8, tail: 0xc04a8a, comb: 0xff5555, beak: 0xf5a623, leg: 0xe08a1e }
 };
 
 function createPolloGeometry(pal) {
   const parts = [];
-  const S = 0.72; // final overall scale
-
-  // ---- LEGS ----
+  const S = 0.72;
   parts.push(colorize(new THREE.BoxGeometry(0.07, 0.24, 0.07).translate(-0.12, 0.12, 0.02), pal.leg, 0.05));
   parts.push(colorize(new THREE.BoxGeometry(0.07, 0.24, 0.07).translate( 0.12, 0.12, 0.02), pal.leg, 0.05));
-  // ---- FEET ----
   parts.push(colorize(new THREE.BoxGeometry(0.14, 0.05, 0.2).translate(-0.12, 0.025, 0.06), pal.leg, 0.05));
   parts.push(colorize(new THREE.BoxGeometry(0.14, 0.05, 0.2).translate( 0.12, 0.025, 0.06), pal.leg, 0.05));
-
-  // ---- BODY ----
   parts.push(colorize(new THREE.BoxGeometry(0.44, 0.42, 0.62).translate(0, 0.45, 0), pal.body, 0.06));
-  // belly highlight
   parts.push(colorize(new THREE.BoxGeometry(0.36, 0.16, 0.5).translate(0, 0.31, 0.02), pal.wing, 0.05));
-
-  // ---- WINGS ----
   parts.push(colorize(new THREE.BoxGeometry(0.08, 0.26, 0.38).translate(-0.25, 0.47, -0.02), pal.wing, 0.07));
   parts.push(colorize(new THREE.BoxGeometry(0.08, 0.26, 0.38).translate( 0.25, 0.47, -0.02), pal.wing, 0.07));
-
-  // ---- HEAD ----
   parts.push(colorize(new THREE.BoxGeometry(0.29, 0.29, 0.29).translate(0, 0.78, 0.21), pal.body, 0.06));
-
-  // ---- BEAK (4-sided cone pointing +Z) ----
   const beak = new THREE.ConeGeometry(0.075, 0.17, 4);
   beak.rotateX(Math.PI / 2);
   beak.translate(0, 0.755, 0.42);
   parts.push(colorize(beak, pal.beak, 0.05));
-
-  // ---- WATTLE (little red cone pointing down) ----
   const wattle = new THREE.ConeGeometry(0.05, 0.13, 4);
   wattle.rotateX(Math.PI);
   wattle.translate(0, 0.655, 0.37);
   parts.push(colorize(wattle, pal.comb, 0.05));
-
-  // ---- COMB (three little pyramids on top of the head) ----
   const combHeights = [0.11, 0.15, 0.10];
   const combZ = [0.10, 0.21, 0.32];
   for (let i = 0; i < 3; i++) {
@@ -1139,59 +1277,41 @@ function createPolloGeometry(pal) {
     cone.translate(0, 0.925 + combHeights[i] * 0.5 - 0.05, combZ[i]);
     parts.push(colorize(cone, pal.comb, 0.05));
   }
-
-  // ---- EYES ----
   parts.push(colorize(new THREE.BoxGeometry(0.05, 0.07, 0.05).translate(-0.145, 0.83, 0.32), 0x1b1b1b, 0.02));
   parts.push(colorize(new THREE.BoxGeometry(0.05, 0.07, 0.05).translate( 0.145, 0.83, 0.32), 0x1b1b1b, 0.02));
-  // little white glint
   parts.push(colorize(new THREE.BoxGeometry(0.025, 0.025, 0.02).translate(-0.155, 0.85, 0.345), 0xffffff, 0.01));
   parts.push(colorize(new THREE.BoxGeometry(0.025, 0.025, 0.02).translate( 0.135, 0.85, 0.345), 0xffffff, 0.01));
-
-  // ---- TAIL (cone angled up & back) ----
   const tail = new THREE.ConeGeometry(0.17, 0.36, 4);
-  tail.rotateX(-0.95);           // point up & backwards
+  tail.rotateX(-0.95);
   tail.translate(0, 0.62, -0.38);
   parts.push(colorize(tail, pal.tail, 0.07));
-
   const merged = mergeGeos(parts);
   merged.scale(S, S, S);
   return merged;
 }
 
-/** Pre-build the three pollo variants once — swapping geometry is instant. */
-const polloGeo = {
-  red:    createPolloGeometry(POLLO_PALETTES.red),
-  blue:   createPolloGeometry(POLLO_PALETTES.blue),
-  golden: createPolloGeometry(POLLO_PALETTES.golden)
-};
+const polloGeo = {};
+for (const k of Object.keys(CHICKEN_PALETTES)) {
+  polloGeo[k] = createPolloGeometry(CHICKEN_PALETTES[k]);
+}
 
-/* ------------------------------------------------------------
-   5.2 CROCODILE — boxes + cones, cute and chunky.
-   Faces +Z. Origin at the feet (y = 0).
-   Variants: Green (base), Blue, Golden.
-   ------------------------------------------------------------ */
 const CROC_PALETTES = {
-  green:  { body: 0x5fa83a, belly: 0xd8e6a8, dark: 0x3f7a26, spike: 0x7cc24a, eye: 0xffffff, pupil: 0x1b1b1b, tooth: 0xfff8e0 },
+  white:  { body: 0xf0f0e8, belly: 0xffffff, dark: 0xd0d0c4, spike: 0xffffff, eye: 0xffffff, pupil: 0x1b1b1b, tooth: 0xfff8e0 },
+  red:    { body: 0xd9473a, belly: 0xf5d0c8, dark: 0xb03528, spike: 0xff7060, eye: 0xffffff, pupil: 0x1b1b1b, tooth: 0xfff8e0 },
   blue:   { body: 0x3f8fd0, belly: 0xcfe6f5, dark: 0x2a6ba0, spike: 0x63b0e8, eye: 0xffffff, pupil: 0x1b1b1b, tooth: 0xfff8e0 },
-  golden: { body: 0xffc93a, belly: 0xfff0b8, dark: 0xd99a10, spike: 0xffe066, eye: 0xffffff, pupil: 0x1b1b1b, tooth: 0xfffdf0 }
+  yellow: { body: 0xf5d020, belly: 0xfff4b0, dark: 0xd9b010, spike: 0xffe060, eye: 0xffffff, pupil: 0x1b1b1b, tooth: 0xfff8e0 },
+  green:  { body: 0x5fa83a, belly: 0xd8e6a8, dark: 0x3f7a26, spike: 0x7cc24a, eye: 0xffffff, pupil: 0x1b1b1b, tooth: 0xfff8e0 },
+  pink:   { body: 0xff8fc4, belly: 0xffd0e8, dark: 0xe06aa8, spike: 0xffb0d4, eye: 0xffffff, pupil: 0x1b1b1b, tooth: 0xfff8e0 }
 };
 
 function createCrocGeometry(pal) {
   const parts = [];
-  const S = 0.62; // final overall scale
-
-  // ---- BODY ----
+  const S = 0.62;
   parts.push(colorize(new THREE.BoxGeometry(0.64, 0.4, 1.15).translate(0, 0.38, -0.1), pal.body, 0.06));
   parts.push(colorize(new THREE.BoxGeometry(0.58, 0.16, 1.05).translate(0, 0.2, -0.1), pal.belly, 0.05));
-
-  // ---- HEAD ----
   parts.push(colorize(new THREE.BoxGeometry(0.52, 0.32, 0.44).translate(0, 0.42, 0.7), pal.body, 0.06));
-  // upper snout
   parts.push(colorize(new THREE.BoxGeometry(0.36, 0.16, 0.58).translate(0, 0.45, 1.15), pal.body, 0.06));
-  // lower jaw
   parts.push(colorize(new THREE.BoxGeometry(0.34, 0.12, 0.55).translate(0, 0.29, 1.13), pal.dark, 0.06));
-
-  // ---- TEETH (tiny white cones pointing down) ----
   const toothZ = [0.95, 1.12, 1.28, 1.4];
   for (let i = 0; i < toothZ.length; i++) {
     for (const side of [-1, 1]) {
@@ -1201,34 +1321,20 @@ function createCrocGeometry(pal) {
       parts.push(colorize(t, pal.tooth, 0.02));
     }
   }
-
-  // ---- EYES ----
   parts.push(colorize(new THREE.BoxGeometry(0.13, 0.12, 0.1).translate(-0.17, 0.6, 0.72), pal.eye, 0.02));
   parts.push(colorize(new THREE.BoxGeometry(0.13, 0.12, 0.1).translate( 0.17, 0.6, 0.72), pal.eye, 0.02));
   parts.push(colorize(new THREE.BoxGeometry(0.06, 0.08, 0.04).translate(-0.17, 0.6, 0.78), pal.pupil, 0.02));
   parts.push(colorize(new THREE.BoxGeometry(0.06, 0.08, 0.04).translate( 0.17, 0.6, 0.78), pal.pupil, 0.02));
-
-  // ---- NOSTRILS ----
   parts.push(colorize(new THREE.BoxGeometry(0.05, 0.04, 0.05).translate(-0.09, 0.54, 1.42), pal.dark, 0.02));
   parts.push(colorize(new THREE.BoxGeometry(0.05, 0.04, 0.05).translate( 0.09, 0.54, 1.42), pal.dark, 0.02));
-
-  // ---- LEGS ----
-  const legPositions = [
-    [-0.31, 0.36], [0.31, 0.36],
-    [-0.31, -0.52], [0.31, -0.52]
-  ];
+  const legPositions = [[-0.31, 0.36], [0.31, 0.36], [-0.31, -0.52], [0.31, -0.52]];
   for (const [lx, lz] of legPositions) {
     parts.push(colorize(new THREE.BoxGeometry(0.17, 0.26, 0.2).translate(lx, 0.13, lz), pal.dark, 0.06));
-    // little foot
     parts.push(colorize(new THREE.BoxGeometry(0.19, 0.07, 0.26).translate(lx, 0.035, lz + 0.03), pal.dark, 0.05));
   }
-
-  // ---- TAIL (three tapering segments) ----
   parts.push(colorize(new THREE.BoxGeometry(0.5, 0.32, 0.5).translate(0, 0.36, -0.98), pal.body, 0.06));
   parts.push(colorize(new THREE.BoxGeometry(0.36, 0.24, 0.5).translate(0, 0.33, -1.38), pal.body, 0.06));
   parts.push(colorize(new THREE.BoxGeometry(0.22, 0.16, 0.44).translate(0, 0.31, -1.74), pal.dark, 0.06));
-
-  // ---- BACK SPIKES (small pyramids along the spine and tail) ----
   const spikeZ = [0.45, 0.1, -0.28, -0.65, -1.0, -1.35, -1.66];
   for (let i = 0; i < spikeZ.length; i++) {
     const sz = spikeZ[i];
@@ -1237,28 +1343,22 @@ function createCrocGeometry(pal) {
     sp.translate(0, 0.6 - Math.abs(sz) * 0.02, sz);
     parts.push(colorize(sp, pal.spike, 0.07));
   }
-
   const merged = mergeGeos(parts);
   merged.scale(S, S, S);
   return merged;
 }
 
-/** Pre-build the three croc variants. */
-const crocGeo = {
-  green:  createCrocGeometry(CROC_PALETTES.green),
-  blue:   createCrocGeometry(CROC_PALETTES.blue),
-  golden: createCrocGeometry(CROC_PALETTES.golden)
-};
+const crocGeo = {};
+for (const k of Object.keys(CROC_PALETTES)) {
+  crocGeo[k] = createCrocGeometry(CROC_PALETTES[k]);
+}
 
-/* ------------------------------------------------------------
-   5.3 GOLDEN EGG (small floating pickup model)
-   ------------------------------------------------------------ */
+/* Small egg model */
 const eggGeo = (() => {
   const g = new THREE.IcosahedronGeometry(0.22, 1);
   const p = g.attributes.position;
   for (let i = 0; i < p.count; i++) {
     const y = p.getY(i);
-    // egg shape: narrower at the top
     const k = 1 + y * 0.35;
     p.setXYZ(i, p.getX(i) * k, y * 1.25, p.getZ(i) * k);
   }
@@ -1268,17 +1368,14 @@ const eggGeo = (() => {
 })();
 
 /* ============================================================
-   6. PARTICLE SYSTEM (single Points draw call)
+   6. PARTICLES — for reward pop effects only (NOT cinematic)
    ============================================================ */
-
-const PCOUNT = 420;
+const PCOUNT = 400;
 const pPositions = new Float32Array(PCOUNT * 3);
 const pColors = new Float32Array(PCOUNT * 3);
 const pVel = new Float32Array(PCOUNT * 3);
 const pLife = new Float32Array(PCOUNT);
 let pCursor = 0;
-
-// park all particles far below the world
 for (let i = 0; i < PCOUNT; i++) pPositions[i * 3 + 1] = -9999;
 
 const particleGeo = new THREE.BufferGeometry();
@@ -1286,37 +1383,28 @@ particleGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
 particleGeo.setAttribute('color', new THREE.BufferAttribute(pColors, 3));
 
 const particleMat = new THREE.PointsMaterial({
-  size: 0.26,
-  vertexColors: true,
-  sizeAttenuation: true,
-  transparent: true,
-  depthWrite: false
+  size: 0.26, vertexColors: true, sizeAttenuation: true,
+  transparent: true, depthWrite: false
 });
 const particleSystem = new THREE.Points(particleGeo, particleMat);
 particleSystem.frustumCulled = false;
 scene.add(particleSystem);
 
-/** Spawn a burst of confetti particles. */
 function burstParticles(pos, colorHex, count) {
   const c = new THREE.Color(colorHex);
   for (let i = 0; i < count; i++) {
     const idx = pCursor;
     pCursor = (pCursor + 1) % PCOUNT;
-
     pPositions[idx * 3] = pos.x;
     pPositions[idx * 3 + 1] = pos.y;
     pPositions[idx * 3 + 2] = pos.z;
-
-    const speed = 1.6 + rand() * 3.0;
+    const speed = 1.6 + rand() * 3.2;
     const a = rand() * Math.PI * 2;
     const e = rand() * Math.PI * 0.5;
-
     pVel[idx * 3]     = Math.cos(a) * Math.cos(e) * speed;
-    pVel[idx * 3 + 1] = Math.sin(e) * speed + 2.0;
+    pVel[idx * 3 + 1] = Math.sin(e) * speed + 2.2;
     pVel[idx * 3 + 2] = Math.sin(a) * Math.cos(e) * speed;
-
-    pLife[idx] = 0.85 + rand() * 0.65;
-
+    pLife[idx] = 0.85 + rand() * 0.7;
     const f = 0.8 + rand() * 0.4;
     pColors[idx * 3]     = Math.min(1, c.r * f);
     pColors[idx * 3 + 1] = Math.min(1, c.g * f);
@@ -1326,18 +1414,14 @@ function burstParticles(pos, colorHex, count) {
   particleGeo.attributes.color.needsUpdate = true;
 }
 
-/** Advance every particle. */
 function updateParticles(dt) {
   let dirty = false;
   for (let i = 0; i < PCOUNT; i++) {
     if (pLife[i] <= 0) continue;
     dirty = true;
     pLife[i] -= dt;
-    if (pLife[i] <= 0) {
-      pPositions[i * 3 + 1] = -9999;
-      continue;
-    }
-    pVel[i * 3 + 1] -= 11.0 * dt; // gravity
+    if (pLife[i] <= 0) { pPositions[i * 3 + 1] = -9999; continue; }
+    pVel[i * 3 + 1] -= 11.0 * dt;
     pPositions[i * 3]     += pVel[i * 3] * dt;
     pPositions[i * 3 + 1] += pVel[i * 3 + 1] * dt;
     pPositions[i * 3 + 2] += pVel[i * 3 + 2] * dt;
@@ -1346,67 +1430,35 @@ function updateParticles(dt) {
 }
 
 /* ============================================================
-   7. FLOATING TEXT POPUPS (HTML projected from 3D)
+   7. FLOATING POPUPS
    ============================================================ */
-
 const popupLayer = document.getElementById('popups');
-const popups = [];          // { el, worldPos, life, maxLife, isEgg }
+const popups = [];
 const _projVec = new THREE.Vector3();
 
-/**
- * Create a floating "+Xg" style popup at a world position.
- * delay = seconds before it appears (used to stagger the egg text).
- */
-function spawnPopup(text, worldPos, isEgg = false, delay = 0) {
+function spawnPopup(text, worldPos, isEgg = false, delay = 0, life = 1.9) {
   const el = document.createElement('div');
   el.className = 'popup' + (isEgg ? ' egg' : '');
   el.textContent = text;
   el.style.opacity = '0';
   popupLayer.appendChild(el);
-
-  popups.push({
-    el,
-    pos: worldPos.clone(),
-    life: 1.75,
-    maxLife: 1.75,
-    delay,
-    isEgg
-  });
+  popups.push({ el, pos: worldPos.clone(), life, maxLife: life, delay, isEgg });
 }
 
 function updatePopups(dt) {
   for (let i = popups.length - 1; i >= 0; i--) {
     const p = popups[i];
-
-    // stagger delay
-    if (p.delay > 0) {
-      p.delay -= dt;
-      continue;
-    }
-
+    if (p.delay > 0) { p.delay -= dt; continue; }
     p.life -= dt;
-    if (p.life <= 0) {
-      p.el.remove();
-      popups.splice(i, 1);
-      continue;
-    }
-
-    // drift upwards in world space
+    if (p.life <= 0) { p.el.remove(); popups.splice(i, 1); continue; }
     p.pos.y += dt * 1.35;
-
-    // project world → screen
     _projVec.copy(p.pos).project(camera);
     const behind = _projVec.z > 1;
     const x = (_projVec.x * 0.5 + 0.5) * window.innerWidth;
     const y = (-_projVec.y * 0.5 + 0.5) * window.innerHeight;
-
-    const t = 1 - p.life / p.maxLife;           // 0 → 1 over lifetime
-    const scale = t < 0.18
-      ? 0.4 + (t / 0.18) * 0.85                // pop-in overshoot
-      : 1.25 - (t - 0.18) * 0.28;              // settle down
-
+    const t = 1 - p.life / p.maxLife;
+    const scale = t < 0.18 ? 0.4 + (t / 0.18) * 0.9 : 1.3 - (t - 0.18) * 0.32;
     const alpha = t > 0.7 ? 1 - (t - 0.7) / 0.3 : 1;
-
     p.el.style.transform =
       `translate(-50%, -50%) translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scale(${scale.toFixed(3)})`;
     p.el.style.opacity = behind ? '0' : alpha.toFixed(2);
@@ -1414,220 +1466,449 @@ function updatePopups(dt) {
 }
 
 /* ============================================================
-   8. GAME STATE & ECONOMY
+   8. AUDIO — MP3 + Web Audio SFX
    ============================================================ */
 
-const CONFIG = {
-  pollo: { speed: 3.7 },
-  croc:  { speed: 3.1, gravity: 22 },
-  maxPollos: 80,
-  costs: { upgrade2: 30, upgrade3: 220, auto: 110 },
-  values: { green: 1, blue: 2, golden: 10 }
+const bgMusic     = document.getElementById('bgMusic');
+const cocoTheme   = document.getElementById('cocodrilloTheme');
+const volumeSlider = document.getElementById('volumeSlider');
+const volumePct   = document.getElementById('volumePct');
+
+bgMusic.volume = 0.4;
+cocoTheme.volume = 0.65;
+
+let audioUnlocked = false;
+function unlockAudio() {
+  if (audioUnlocked) return;
+  audioUnlocked = true;
+  bgMusic.play().catch(() => {});
+}
+
+volumeSlider.addEventListener('input', (e) => {
+  const v = parseFloat(e.target.value);
+  bgMusic.volume = v;
+  volumePct.textContent = Math.round(v * 100) + '%';
+});
+
+/* Web Audio synthesizer for game SFX */
+const Sound = (() => {
+  let ctx = null;
+  function ensure() {
+    if (!ctx) {
+      try { ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+      catch (e) { return null; }
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
+  function tone(fA, fB, dur, type = 'square', vol = 0.13) {
+    const c = ensure(); if (!c) return;
+    const t0 = c.currentTime;
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(fA, t0);
+    if (fB !== fA) osc.frequency.exponentialRampToValueAtTime(Math.max(1, fB), t0 + dur);
+    gain.gain.setValueAtTime(vol, t0);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(gain).connect(c.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.02);
+  }
+  function noise(dur, ff, vol = 0.25, ft = 'lowpass') {
+    const c = ensure(); if (!c) return;
+    const t0 = c.currentTime;
+    const n = Math.floor(c.sampleRate * dur);
+    const buf = c.createBuffer(1, n, c.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 1.7);
+    const src = c.createBufferSource(); src.buffer = buf;
+    const f = c.createBiquadFilter(); f.type = ft; f.frequency.setValueAtTime(ff, t0);
+    const g = c.createGain();
+    g.gain.setValueAtTime(vol, t0);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    src.connect(f).connect(g).connect(c.destination);
+    src.start(t0); src.stop(t0 + dur + 0.02);
+  }
+  return {
+    unlock() { ensure(); },
+    spawn() { tone(320, 820, 0.12, 'square', 0.09); },
+    splash() { noise(0.35, 1000, 0.18, 'lowpass'); tone(220, 90, 0.2, 'sine', 0.06); },
+    pop() { tone(600, 1200, 0.10, 'triangle', 0.08); },
+    launch() { tone(300, 900, 0.28, 'sawtooth', 0.11); },
+    whistle() {
+      const c = ensure(); if (!c) return;
+      const t0 = c.currentTime;
+      const o = c.createOscillator(); const g = c.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(900, t0);
+      o.frequency.exponentialRampToValueAtTime(120, t0 + 0.55);
+      g.gain.setValueAtTime(0.09, t0);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.55);
+      o.connect(g).connect(c.destination);
+      o.start(t0); o.stop(t0 + 0.6);
+    },
+    thud() { noise(0.35, 240, 0.32, 'lowpass'); tone(120, 55, 0.35, 'sine', 0.16); },
+    coin() {
+      tone(1200, 1800, 0.07, 'square', 0.07);
+      setTimeout(() => tone(1600, 2200, 0.09, 'square', 0.06), 50);
+    },
+    upgrade() {
+      [523, 659, 784, 1047, 1319].forEach((f, i) =>
+        setTimeout(() => tone(f, f * 1.5, 0.22, 'triangle', 0.11), i * 70));
+    },
+    egg() {
+      [880, 1175, 1568, 2093].forEach((f, i) =>
+        setTimeout(() => tone(f, f, 0.16, 'sine', 0.09), i * 60));
+    }
+  };
+})();
+
+window.addEventListener('pointerdown', () => { Sound.unlock(); unlockAudio(); }, { once: true });
+window.addEventListener('keydown', () => { Sound.unlock(); unlockAudio(); }, { once: true });
+
+/* ============================================================
+   9. GAME STATE
+   ============================================================ */
+
+/* Rank names — polished Polish progression */
+const RANK_NAMES = [
+  'COCODRILO NOWICJUSZ',
+  'COCODRILO UCZEŃ',
+  'COCODRILO WOJOWNIK',
+  'COCODRILO RYCERZ',
+  'COCODRILO MISTRZ',
+  'COCODRILO WETERAN',
+  'COCODRILO ELITA',
+  'COCODRILO LEGENDA',
+  'COCODRILO MITYCZNY',
+  'COCODRILO KOSMICZNY',
+  'COCODRILO GALAKTYCZNY',
+  'COCODRILO NIEŚMIERTELNY',
+  'COCODRILO PRAPOCZĄTEK',
+  'COCODRILO OSTATNI',
+  'COCODRILO NIESKOŃCZONY'
+];
+
+const RANK_MULT = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384];
+
+/* Cost to reach next level (index = current level - 1) */
+const UPGRADE_COSTS = [
+  50, 200, 800, 2500, 8000, 25000, 80000, 250000, 800000,
+  2500000, 8000000, 25000000, 80000000, 250000000
+];
+
+const COLOR_VALUES = {
+  white: 1, red: 2, blue: 5, yellow: 8, green: 12, pink: 20
 };
 
 const state = {
   gold: 0,
   eggs: 0,
   level: 1,
-  autoOwned: false,
-  autoTimer: 0,
   hudDirty: true
 };
 
 /* ------------------------------------------------------------
-   WALK PATHS (world coordinates, all on the y = 0 plane)
+   SHOP — permanent upgrades bought with Jajka Pollo
    ------------------------------------------------------------ */
-const PATH_POLLO = [
-  new THREE.Vector3(-13.0, 0, 0.6),   // 0 : spawn point in front of the barn
-  new THREE.Vector3( -9.4, 0, 0.15),  // 1 : bridge entrance
-  new THREE.Vector3( -2.6, 0, 0.0)    // 2 : fountain edge -> gets absorbed
+const SHOP_ITEMS = [
+  {
+    id: 'goldMult',
+    icon: '🪙',
+    name: 'Złoty Mnożnik',
+    desc: 'Każdy Cocodrillo daje więcej złota za upadek z klifu.',
+    baseCost: 2, costScale: 1.55, maxTier: 8,
+    fmtEffect: (t) => `+${t * 50}% złota`
+  },
+  {
+    id: 'polloSpeed',
+    icon: '💨',
+    name: 'Bieg Pollo',
+    desc: 'Pollo szybciej biegają do Fontanny — krótsze sekwencje.',
+    baseCost: 2, costScale: 1.5, maxTier: 6,
+    fmtEffect: (t) => `+${t * 15}% szybkości`
+  },
+  {
+    id: 'launchPower',
+    icon: '🚀',
+    name: 'Siła Wyrzutu',
+    desc: 'Cocodrillo wyżej i dalej wylatują z Fontanny.',
+    baseCost: 3, costScale: 1.55, maxTier: 5,
+    fmtEffect: (t) => `+${t * 18}% siły`
+  },
+  {
+    id: 'eggChance',
+    icon: '🥚',
+    name: 'Dodatkowe Jajka',
+    desc: 'Każda sekwencja daje więcej Jajek Pollo.',
+    baseCost: 3, costScale: 1.6, maxTier: 5,
+    fmtEffect: (t) => `+${t} Jajko${t === 1 ? '' : t < 5 ? 'a' : 'ek'} / bieg`
+  },
+  {
+    id: 'morePollo',
+    icon: '🐔',
+    name: 'Więcej Pollo',
+    desc: 'Dodatkowe kurczaki w każdym stadzie.',
+    baseCost: 5, costScale: 1.7, maxTier: 4,
+    fmtEffect: (t) => `+${t} Pollo`
+  }
 ];
 
-const PATH_CROC = [
-  new THREE.Vector3( 2.6, 0, 0.0),    // 0 : fountain exit
-  new THREE.Vector3( 9.4, 0, 0.0),    // 1 : second bridge
-  new THREE.Vector3(15.8, 0, 0.0)     // 2 : cliff edge on the right island
-];
+const shopState = {};
+for (const item of SHOP_ITEMS) shopState[item.id] = 0;
 
-const FOUNTAIN_CENTER = new THREE.Vector3(0, 0, 0);
+function shopCost(item) {
+  return Math.ceil(item.baseCost * Math.pow(item.costScale, shopState[item.id]));
+}
 
 /* ------------------------------------------------------------
-   ACTIVE ENTITY LISTS
+   PATHS
    ------------------------------------------------------------ */
-const pollos = [];        // walking chickens
-const crocs = [];         // walking crocodiles
-const pendingCrocs = [];  // { variant, timer } — waiting to emerge
-const floatingEggs = [];  // golden egg pickups floating up
+const PATH_POLLO = [
+  new THREE.Vector3(-13.0, 0, 0.6),
+  new THREE.Vector3( -8.0, 0, 0.3),
+  new THREE.Vector3( -2.4, 0, 0.0)   // fountain edge
+];
+/* Crocs land on the right island then walk to cliff */
+const PATH_CROC_WALK = [
+  new THREE.Vector3(10.0, 0, 0.0),
+  new THREE.Vector3(15.8, 0, 0.0)
+];
+
+/* ------------------------------------------------------------
+   ENTITIES
+   ------------------------------------------------------------ */
+const pollos = [];
+const crocs = [];
+const floatingEggs = [];
 
 /* ============================================================
-   9. TRANSFORMATION ROLL LOGIC
+   10. CINEMATIC STATE MACHINE
    ============================================================ */
 
-/**
- * Decide what a red Pollo becomes when it enters the vortex.
- *  L1 : 100% Green
- *  L2 : 50% Blue, 50% Green
- *  L3 : 14% Golden, 56% Blue, 30% Green   (blue path 70% × 20% golden)
- */
-function rollTransform() {
-  const r = rand();
-  if (state.level >= 3) {
-    if (r < 0.14) return 'golden';
-    if (r < 0.70) return 'blue';
-    return 'green';
+const cinematic = {
+  active: false,
+  t: 0,
+  phase: -1,
+  phaseT: 0,
+  polloQueue: [],
+  crocQueue: [],
+  leader: null,
+  chicks: [],
+  camPos: new THREE.Vector3(),
+  camLook: new THREE.Vector3(),
+  slowMo: 0,
+  camShake: 0,
+  eggsThisRun: 0
+};
+
+const PHASE = {
+  INIT: 0,       // brief intro as pollo spawn
+  RUN: 1,        // pollo run to fountain & disappear
+  SUSPENSE: 2,   // camera close on water dome, wait
+  EMERGE: 3,     // crocs launch out
+  FLYING: 4,     // crocs arc through the air & land
+  FALL: 5,       // slow-mo fall off cliff
+  RETURN: 6      // camera glides back
+};
+
+function startCinematic() {
+  if (cinematic.active) return;
+
+  // Unlock audio on the same gesture
+  unlockAudio();
+  Sound.unlock();
+
+  cinematic.active = true;
+  cinematic.t = 0;
+  cinematic.phase = PHASE.INIT;
+  cinematic.phaseT = 0;
+  cinematic.leader = null;
+  cinematic.chicks = [];
+  cinematic.crocQueue = [];
+  cinematic.slowMo = 0;
+  cinematic.camShake = 0;
+  cinematic.eggsThisRun = 0;
+
+  // Base roster: leader + 5 chicks, staggered
+  const extras = shopState.morePollo || 0;
+  const extraColors = ['red', 'blue', 'yellow', 'green', 'pink'];
+  const roster = [
+    { color: 'white', isLeader: true, delay: 0.00, spawned: false }
+  ];
+  for (let i = 0; i < extraColors.length; i++) {
+    roster.push({ color: extraColors[i], isLeader: false, delay: 0.30 + i * 0.13, spawned: false });
   }
-  if (state.level === 2) {
-    return r < 0.5 ? 'blue' : 'green';
+  // Bonus chickens from shop (repeat colors)
+  for (let i = 0; i < extras; i++) {
+    roster.push({
+      color: extraColors[i % extraColors.length],
+      isLeader: false,
+      delay: 1.00 + i * 0.13,
+      spawned: false
+    });
   }
-  return 'green';
+  cinematic.polloQueue = roster;
+
+  cinematic.camPos.copy(camera.position);
+  cinematic.camLook.copy(camState.target);
+
+  document.body.classList.add('cinematic');
+  btnSpawn.disabled = true;
+}
+
+function endCinematic() {
+  cinematic.active = false;
+  cinematic.phase = -1;
+  cinematic.slowMo = 0;
+  cinematic.camShake = 0;
+
+  for (const p of pollos) scene.remove(p.mesh);
+  for (const c of crocs) scene.remove(c.mesh);
+  pollos.length = 0;
+  crocs.length = 0;
+
+  // Sync orbit state to camera so no pop
+  const rel = new THREE.Vector3().subVectors(camera.position, camState.target);
+  camState.radius = clamp(rel.length(), 13, 62);
+  camState.phi = clamp(Math.acos(rel.y / camState.radius), 0.24, 1.44);
+  camState.theta = Math.atan2(rel.x, rel.z);
+
+  document.body.classList.remove('cinematic');
+  btnSpawn.disabled = false;
+
+  // Fade cocodrillo theme
+  try {
+    cocoTheme.pause();
+    cocoTheme.currentTime = 0;
+  } catch (e) {}
+
+  state.hudDirty = true;
 }
 
 /* ============================================================
-   10. SPAWNING
+   11. SPAWNERS
    ============================================================ */
 
-/** Spawn one Pollo (chicken) in front of the barn. */
-function spawnPollo() {
-  if (pollos.length >= CONFIG.maxPollos) return;
-
-  const mesh = new THREE.Mesh(polloGeo.red, MAT.body);
+function spawnPolloEntity(color, isLeader) {
+  const geo = polloGeo[color] || polloGeo.red;
+  const mesh = new THREE.Mesh(geo, MAT.body);
   mesh.castShadow = true;
 
+  const scale = isLeader ? 1.22 : 0.72;
+  mesh.scale.setScalar(scale);
+
   const start = PATH_POLLO[0].clone();
-  start.x += randRange(-0.55, 0.55);
-  start.z += randRange(-0.4, 0.4);
+  start.x += randRange(-0.35, 0.35);
+  start.z += randRange(-0.35, 0.35);
   mesh.position.copy(start);
-  mesh.rotation.y = Math.PI / 2; // face +X (towards the fountain)
+  mesh.rotation.y = Math.PI / 2;
 
   scene.add(mesh);
 
-  pollos.push({
-    mesh,
+  // Pollo speed from shop upgrade
+  const speedMult = 1 + (shopState.polloSpeed || 0) * 0.15;
+  const p = {
+    mesh, color, isLeader, baseScale: scale,
     seg: 1,
-    speed: CONFIG.pollo.speed * randRange(0.9, 1.12),
+    speed: 7.5 * speedMult * randRange(0.97, 1.03),
     state: 'walk',
     phase: rand() * Math.PI * 2,
-    t: 0,
-    result: null,
-    swapped: false
-  });
+    t: 0
+  };
+  pollos.push(p);
+  return p;
 }
 
-/** Spawn the crocodile that emerges from the vortex. */
-function spawnCroc(variant) {
-  const geo = crocGeo[variant] || crocGeo.green;
-  const mat = variant === 'golden' ? MAT.gold : MAT.body;
-
-  const mesh = new THREE.Mesh(geo, mat);
+function spawnCrocEntity(color, launching = false) {
+  const geo = crocGeo[color] || crocGeo.green;
+  const mesh = new THREE.Mesh(geo, MAT.body);
   mesh.castShadow = true;
-  mesh.position.set(PATH_CROC[0].x, 0, PATH_CROC[0].z);
-  mesh.rotation.y = Math.PI / 2;
   mesh.scale.setScalar(0.01);
   scene.add(mesh);
 
-  crocs.push({
-    mesh,
-    seg: 1,
-    speed: CONFIG.croc.speed * randRange(0.92, 1.1),
-    state: 'emerge',
+  // Launch power from shop
+  const launchMult = 1 + (shopState.launchPower || 0) * 0.18;
+
+  const c = {
+    mesh, color,
+    seg: 0,
+    speed: 5.5,
+    state: launching ? 'launch' : 'walk',
     t: 0,
-    variant,
     phase: rand() * Math.PI * 2,
     fallV: 0,
-    awarded: false
-  });
+    awarded: false,
+    // Ballistic velocities
+    vel: { x: 6 * launchMult, y: 16 * launchMult }
+  };
+
+  if (launching) {
+    // Burst out of fountain
+    mesh.position.set(0, 1.5, 0);
+    mesh.rotation.y = Math.PI / 2;
+    mesh.rotation.z = randRange(-0.6, 0.6);
+  } else {
+    mesh.position.set(PATH_CROC_WALK[0].x, 0, PATH_CROC_WALK[0].z);
+    mesh.rotation.y = Math.PI / 2;
+    c.seg = 1;
+  }
+
+  crocs.push(c);
+  return c;
 }
 
 /* ============================================================
-   11. UPDATES — ENTITIES
+   12. ENTITY UPDATES
    ============================================================ */
-
-/** Generic "walk along a path" helper. Returns true when the path ends. */
-function walkAlong(entity, path, dt) {
-  const target = path[entity.seg];
-  if (!target) return true;
-
-  const m = entity.mesh;
-  const dx = target.x - m.position.x;
-  const dz = target.z - m.position.z;
-  const dist = Math.hypot(dx, dz);
-  const step = entity.speed * dt;
-
-  if (dist <= step || dist < 0.0001) {
-    m.position.x = target.x;
-    m.position.z = target.z;
-    entity.seg++;
-    return entity.seg >= path.length;
-  }
-
-  m.position.x += (dx / dist) * step;
-  m.position.z += (dz / dist) * step;
-  m.rotation.y = Math.atan2(dx, dz); // model faces +Z
-  return false;
-}
 
 function updatePollos(dt) {
   for (let i = pollos.length - 1; i >= 0; i--) {
     const p = pollos[i];
     const m = p.mesh;
 
-    /* ---------- WALKING ---------- */
     if (p.state === 'walk') {
-      const done = walkAlong(p, PATH_POLLO, dt);
+      const target = PATH_POLLO[p.seg];
+      if (!target) { p.state = 'absorb'; p.t = 0; continue; }
 
-      // cute waddle: bob up/down + slight roll
+      const dx = target.x - m.position.x;
+      const dz = target.z - m.position.z;
+      const dist = Math.hypot(dx, dz);
+      const step = p.speed * dt;
+
+      if (dist <= step || dist < 0.001) {
+        m.position.x = target.x;
+        m.position.z = target.z;
+        p.seg++;
+        if (p.seg >= PATH_POLLO.length) { p.state = 'absorb'; p.t = 0; }
+      } else {
+        m.position.x += (dx / dist) * step;
+        m.position.z += (dz / dist) * step;
+        m.rotation.y = Math.atan2(dx, dz);
+      }
       p.phase += dt * 13;
-      m.position.y = Math.abs(Math.sin(p.phase)) * 0.055;
+      m.position.y = Math.abs(Math.sin(p.phase)) * 0.055 * p.baseScale;
       m.rotation.z = Math.sin(p.phase) * 0.06;
-
-      if (done) {
-        p.state = 'swirl';
-        p.t = 0;
-        p.result = rollTransform();
-        p.swapped = false;
-      }
     }
-
-    /* ---------- BEING SWIRLED INTO THE VORTEX ---------- */
-    else if (p.state === 'swirl') {
+    else if (p.state === 'absorb') {
+      // Pollo sinks into the water dome, spinning & shrinking
       p.t += dt;
-      const k = Math.min(1, p.t / 0.95);   // 0..1 progress
-
-      // spiral inward & upward
-      const ang = Math.PI + k * Math.PI * 4.5;
-      const rad = 2.05 * (1 - k) + 0.16;
+      const k = Math.min(1, p.t / 0.55);
+      const ang = Math.PI + k * Math.PI * 3;
+      const rad = 0.55 * (1 - k) + 0.05;
       m.position.set(
-        FOUNTAIN_CENTER.x + Math.cos(ang) * rad,
-        0.35 + k * 1.15,
-        FOUNTAIN_CENTER.z + Math.sin(ang) * rad
+        Math.cos(ang) * rad,
+        0.9 + k * 0.4,
+        Math.sin(ang) * rad
       );
-      m.rotation.y += dt * 17;
-      m.rotation.z = Math.sin(p.t * 14) * 0.35;
-
-      // shrink into nothing
-      const sc = 1 - k * k * 0.92;
-      m.scale.setScalar(sc);
-
-      // mid-swirl colour upgrade (blue / golden)
-      if (!p.swapped && k > 0.32 && p.result !== 'green') {
-        p.swapped = true;
-        if (p.result === 'golden') {
-          m.geometry = polloGeo.golden;
-          m.material = MAT.gold;
-          burstParticles(m.position, 0xffd75e, 12);
-        } else {
-          m.geometry = polloGeo.blue;
-          burstParticles(m.position, 0x6fb8ff, 10);
-        }
-      }
-
-      // fully absorbed -> queue the crocodile
+      m.rotation.y += dt * 18;
+      m.rotation.x = k * Math.PI * 0.7;
+      m.scale.setScalar(p.baseScale * (1 - k * k * 1.0));
       if (k >= 1) {
         scene.remove(m);
         pollos.splice(i, 1);
-
-        burstParticles(new THREE.Vector3(0, 1.9, 0), 0xffe08a, 20);
-        pendingCrocs.push({ variant: p.result, timer: 0.45 });
+        Sound.splash();
       }
     }
   }
@@ -1638,51 +1919,75 @@ function updateCrocs(dt) {
     const c = crocs[i];
     const m = c.mesh;
 
-    /* ---------- EMERGING FROM THE VORTEX ---------- */
-    if (c.state === 'emerge') {
+    /* ---- LAUNCH (ballistic arc) ---- */
+    if (c.state === 'launch') {
       c.t += dt;
-      const k = Math.min(1, c.t / 0.38);
-      const e = 1 - Math.pow(1 - k, 3);   // ease-out cubic
+      // Pop-in scale over first 0.25s
+      const k = Math.min(1, c.t / 0.25);
+      const e = 1 - Math.pow(1 - k, 3);
       m.scale.setScalar(Math.max(0.01, e));
-      m.rotation.z = Math.sin(k * Math.PI) * 0.25;
 
-      if (k >= 1) {
-        m.scale.setScalar(1);
+      // Ballistic physics
+      c.vel.y -= 16 * dt;
+      m.position.x += c.vel.x * dt;
+      m.position.y += c.vel.y * dt;
+      m.rotation.z -= dt * 4.5;  // tumble in air
+      m.rotation.x += dt * 1.5;
+
+      // Land when reaching ground on the right side
+      if (m.position.y <= 0 && c.vel.y < 0) {
+        m.position.y = 0;
         m.rotation.z = 0;
+        m.rotation.x = 0;
+        m.rotation.y = Math.PI / 2;
         c.state = 'walk';
+        c.seg = 0; // start path at x=10
       }
     }
-
-    /* ---------- WALKING ACROSS THE ISLANDS ---------- */
+    /* ---- WALK to the cliff ---- */
     else if (c.state === 'walk') {
-      const done = walkAlong(c, PATH_CROC, dt);
+      const target = PATH_CROC_WALK[c.seg];
+      if (!target) { c.state = 'fall'; c.fallV = 0.5; continue; }
 
-      // heavy waddle
-      c.phase += dt * 9;
-      m.position.y = Math.abs(Math.sin(c.phase)) * 0.045;
-      m.rotation.z = Math.sin(c.phase) * 0.04;
+      const dx = target.x - m.position.x;
+      const dz = target.z - m.position.z;
+      const dist = Math.hypot(dx, dz);
+      const step = c.speed * dt;
 
-      if (done) {
-        c.state = 'fall';
-        c.fallV = 0.5;
-
-        // ---- PAY OUT when the croc reaches the cliff ----
-        if (!c.awarded) {
-          c.awarded = true;
-          awardCroc(c);
+      if (dist <= step || dist < 0.001) {
+        m.position.x = target.x;
+        m.position.z = target.z;
+        c.seg++;
+        if (c.seg >= PATH_CROC_WALK.length) {
+          c.state = 'fall';
+          c.fallV = 0.5;
+          Sound.whistle();
         }
+      } else {
+        m.position.x += (dx / dist) * step;
+        m.position.z += (dz / dist) * step;
+        m.rotation.y = Math.atan2(dx, dz);
       }
+      c.phase += dt * 9;
+      m.position.y = Math.abs(Math.sin(c.phase)) * 0.05;
+      m.rotation.z = Math.sin(c.phase) * 0.04;
     }
-
-    /* ---------- FALLING OFF THE CLIFF ---------- */
+    /* ---- FALL off cliff ---- */
     else if (c.state === 'fall') {
-      c.fallV += CONFIG.croc.gravity * dt;
-      m.position.x += c.speed * 0.85 * dt;
+      c.fallV += 22 * dt;
+      m.position.x += c.speed * 0.8 * dt;
       m.position.y -= c.fallV * dt;
       m.rotation.z -= dt * 3.2;
       m.rotation.x += dt * 0.9;
 
-      if (m.position.y < -16) {
+      // Trigger reward & camera shake at first frame of contact
+      if (!c.awarded && m.position.y < -1.0) {
+        c.awarded = true;
+        Sound.thud();
+        cinematic.camShake = Math.min(0.9, cinematic.camShake + 0.42);
+        awardCroc(c);
+      }
+      if (m.position.y < -14) {
         scene.remove(m);
         crocs.splice(i, 1);
       }
@@ -1690,37 +1995,61 @@ function updateCrocs(dt) {
   }
 }
 
-/** Award gold (and possibly a golden egg) for a finished crocodile. */
 function awardCroc(c) {
-  const variant = c.variant;
-  const value = CONFIG.values[variant] || 1;
+  const rankMult = RANK_MULT[Math.min(state.level - 1, RANK_MULT.length - 1)];
+  const shopMult = 1 + (shopState.goldMult || 0) * 0.5;
+  const base = COLOR_VALUES[c.color] || 1;
+  const value = Math.floor(base * rankMult * shopMult);
 
   state.gold += value;
   state.hudDirty = true;
 
   const popPos = c.mesh.position.clone();
-  popPos.y += 1.0;
+  popPos.y = 0.5;
+  popPos.x += 1.5;
 
-  spawnPopup('+' + value + 'g', popPos, false, 0);
+  // Meme value text
+  const phrases = ['+{v} złota', '+{v} szmalu', '+{v} monet', '+{v} siana', '+{v} kasy'];
+  const tpl = phrases[Math.floor(rand() * phrases.length)];
+  spawnPopup(tpl.replace('{v}', value), popPos, false, 0, 2.0);
 
-  if (variant === 'golden') {
-    state.eggs += 1;
-    spawnPopup('+1 🥚', popPos.clone().add(new THREE.Vector3(0, 0.55, 0)), true, 0.25);
-    burstParticles(popPos, 0xffe08a, 26);
-
-    // spawn a floating golden egg model that drifts up
-    const eggMesh = new THREE.Mesh(eggGeo, MAT.gold);
-    eggMesh.position.copy(popPos);
-    eggMesh.castShadow = true;
-    scene.add(eggMesh);
-    floatingEggs.push({ mesh: eggMesh, life: 1.9, vy: 1.9 });
-  } else {
-    burstParticles(popPos, variant === 'blue' ? 0x6fb8ff : 0x8ee04c, 12);
-  }
-
-  // pulse the HUD counters
+  Sound.coin();
+  burstParticles(popPos, c.color === 'pink' ? 0xff8fc4 : 0xffe08a, 14);
   pulseStat('goldStat');
-  if (variant === 'golden') pulseStat('eggStat');
+
+  // Count egg this run
+  cinematic.eggsThisRun += 1;
+}
+
+/* Egg spawning is done ONCE per cinematic at end */
+function grantRunEggs() {
+  // Base 1-2 eggs + upgrade bonus
+  let earned = 1 + Math.floor(rand() * 2);
+  earned += shopState.eggChance || 0;
+
+  if (earned > 0) {
+    state.eggs += earned;
+    state.hudDirty = true;
+
+    const pos = new THREE.Vector3(14, 2.4, 0);
+    const label = earned === 1 ? '+1 JAJKO POLLO' : `+${earned} JAJKA POLLO`;
+    spawnPopup(label, pos, true, 0, 2.4);
+    Sound.egg();
+
+    // Floating egg model
+    for (let i = 0; i < Math.min(earned, 4); i++) {
+      const em = new THREE.Mesh(eggGeo, MAT.body);
+      em.position.set(14 + (i - 1.5) * 0.4, 2.0 + i * 0.15, 0);
+      em.castShadow = true;
+      scene.add(em);
+      floatingEggs.push({
+        mesh: em,
+        life: 2.2 + i * 0.15,
+        vy: 1.6
+      });
+    }
+    pulseStat('eggStat');
+  }
 }
 
 function updateFloatingEggs(dt) {
@@ -1730,78 +2059,249 @@ function updateFloatingEggs(dt) {
     e.mesh.position.y += e.vy * dt;
     e.mesh.rotation.y += dt * 4.0;
     e.mesh.rotation.x += dt * 1.6;
-    const s = Math.max(0.01, Math.min(1, e.life / 1.9));
+    const s = Math.max(0.01, Math.min(1, e.life / 2.2));
     e.mesh.scale.setScalar(s);
-    if (e.life <= 0) {
-      scene.remove(e.mesh);
-      floatingEggs.splice(i, 1);
-    }
-  }
-}
-
-/** Wait for the transformation delay then spawn the crocodile. */
-function updatePendingCrocs(dt) {
-  for (let i = pendingCrocs.length - 1; i >= 0; i--) {
-    const pc = pendingCrocs[i];
-    pc.timer -= dt;
-    if (pc.timer <= 0) {
-      spawnCroc(pc.variant);
-      burstParticles(new THREE.Vector3(2.2, 1.0, 0), 0xffd75e, 10);
-      pendingCrocs.splice(i, 1);
-    }
+    if (e.life <= 0) { scene.remove(e.mesh); floatingEggs.splice(i, 1); }
   }
 }
 
 /* ============================================================
-   12. WORLD ANIMATION (vortex, rings, clouds, rocks)
+   13. CINEMATIC DIRECTOR — LEFT-SIDE CLOSE-UP CAMERA
+   ============================================================ */
+
+const _cTargetPos = new THREE.Vector3();
+const _cTargetLook = new THREE.Vector3();
+const _tmpVec = new THREE.Vector3();
+
+/**
+ * Camera positions chosen so the camera is always on the LEFT side
+ * of the Pollo/Cocodrillo (negative Z relative to their path along +X).
+ * "Avengers style" = sweeping arc around subjects with slow zoom.
+ */
+function computePhaseTargets() {
+  const p = cinematic.phase;
+  const pt = cinematic.phaseT;
+
+  if (p === PHASE.INIT) {
+    // Push in on the leader as they spawn near barn
+    let lp = _tmpVec.set(-12.5, 0, 0.5);
+    if (cinematic.leader && cinematic.leader.mesh) lp = cinematic.leader.mesh.position;
+    _cTargetPos.set(lp.x - 1.2, 2.2, lp.z - 4.2);
+    _cTargetLook.set(lp.x, 0.7, lp.z);
+  }
+  else if (p === PHASE.RUN) {
+    // Track the leader on their LEFT, close-up
+    const leader = cinematic.leader;
+    let lp = _tmpVec.set(-8, 0, 0);
+    if (leader && leader.mesh) {
+      lp = leader.mesh.position;
+    } else if (cinematic.chicks.length > 0) {
+      lp = cinematic.chicks[cinematic.chicks.length - 1].mesh.position;
+    }
+    _cTargetPos.set(lp.x + 0.8, 2.0, lp.z - 3.8);
+    _cTargetLook.set(lp.x + 1.0, 0.6, lp.z);
+  }
+  else if (p === PHASE.SUSPENSE) {
+    // Slow zoom-in on the fountain
+    const k = clamp(pt / 1.0, 0, 1);
+    const dist = 5.5 - k * 1.8;   // 5.5 → 3.7  (slow zoom)
+    const height = 2.4 - k * 0.3; // 2.4 → 2.1
+    _cTargetPos.set(-0.6, height, -dist);
+    _cTargetLook.set(0, 1.3 + k * 0.2, 0);
+  }
+  else if (p === PHASE.EMERGE) {
+    // "Avengers sweep" — arc around the fountain as crocs launch
+    const k = clamp(pt / 1.6, 0, 1);
+    const angle = -Math.PI * 0.35 + k * Math.PI * 0.85;
+    const radius = 6.5 - k * 1.2;
+    _cTargetPos.set(
+      Math.sin(angle) * radius,
+      3.2 + Math.sin(k * Math.PI) * 0.8,
+      -Math.cos(angle) * radius
+    );
+    _cTargetLook.set(0.5, 2.2 + k * 1.5, 0);
+  }
+  else if (p === PHASE.FLYING) {
+    // Track the airborne/landed crocs from their LEFT
+    let cx = 6, cy = 0, n = 0;
+    for (const c of crocs) {
+      if (c.state === 'launch' || c.state === 'walk') {
+        cx += c.mesh.position.x; cy += c.mesh.position.y; n++;
+      }
+    }
+    if (n > 0) { cx /= (n + 1); cy /= (n + 1); }
+    _cTargetPos.set(cx, 3.8 + cy * 0.3, -6.5);
+    _cTargetLook.set(cx + 1.0, 1.2 + cy * 0.5, 0);
+  }
+  else if (p === PHASE.FALL) {
+    // Dramatic close-up on the cliff edge (slow-mo)
+    let lowestY = 0, cx = 15.8, n = 0;
+    for (const c of crocs) {
+      if (c.state === 'fall') {
+        if (c.mesh.position.y < lowestY) lowestY = c.mesh.position.y;
+        cx += c.mesh.position.x * 0.6; n++;
+      }
+    }
+    if (n > 0) cx /= (n + 1);
+    _cTargetPos.set(cx + 0.5, Math.max(0.5, lowestY * 0.7 + 3.0), -5.2);
+    _cTargetLook.set(cx, Math.max(-4, lowestY), 0);
+  }
+  else if (p === PHASE.RETURN) {
+    // Glide back to default orbit pose
+    const r = camState.radius, phi = camState.phi, theta = camState.theta;
+    _cTargetPos.set(
+      camState.target.x + r * Math.sin(phi) * Math.sin(theta),
+      camState.target.y + r * Math.cos(phi),
+      camState.target.z + r * Math.sin(phi) * Math.cos(theta)
+    );
+    _cTargetLook.copy(camState.target);
+  }
+}
+
+function updateCinematicCamera(dt) {
+  computePhaseTargets();
+
+  // Camera shake
+  let sx = 0, sy = 0, sz = 0;
+  if (cinematic.camShake > 0) {
+    cinematic.camShake = Math.max(0, cinematic.camShake - dt * 1.6);
+    const s = cinematic.camShake * 0.42;
+    sx = (Math.random() - 0.5) * s;
+    sy = (Math.random() - 0.5) * s;
+    sz = (Math.random() - 0.5) * s;
+  }
+
+  // Camera smoothing — slow rates for cinematic feel, snappier for close-ups
+  const kPos = 2.6;
+  const kLook = 3.8;
+  const aPos = smoothAlpha(kPos, dt);
+  const aLook = smoothAlpha(kLook, dt);
+
+  cinematic.camPos.lerp(_cTargetPos, aPos);
+  cinematic.camLook.lerp(_cTargetLook, aLook);
+
+  camera.position.copy(cinematic.camPos).add(_tmpVec.set(sx, sy, sz));
+  camera.lookAt(cinematic.camLook);
+}
+
+/* ---- Phase transition helper ---- */
+function enterPhase(next) {
+  cinematic.phase = next;
+  cinematic.phaseT = 0;
+
+  if (next === PHASE.SUSPENSE) {
+    // Nothing extra — the slow zoom speaks for itself
+  }
+  else if (next === PHASE.EMERGE) {
+    // Play the Cocodrillo theme exactly when they start bursting out
+    try {
+      cocoTheme.currentTime = 0;
+      cocoTheme.volume = bgMusic.volume * 0.9 + 0.15;
+      cocoTheme.play().catch(() => {});
+    } catch (e) {}
+    // Queue crocs for immediate launch (0.2s stagger)
+    const colors = cinematic.polloQueue.map(q => q.color);
+    cinematic.crocQueue = colors.map((c, i) => ({ color: c, delay: i * 0.2, spawned: false }));
+  }
+  else if (next === PHASE.FALL) {
+    cinematic.slowMo = 1;
+  }
+  else if (next === PHASE.RETURN) {
+    cinematic.slowMo = 0;
+    // Award eggs at the very end of the run
+    grantRunEggs();
+  }
+}
+
+/* ---- Cinematic tick ---- */
+function updateCinematic(dt) {
+  if (!cinematic.active) return;
+
+  cinematic.t += dt;
+  cinematic.phaseT += dt;
+
+  // Spawn queued pollos
+  for (const q of cinematic.polloQueue) {
+    if (!q.spawned && cinematic.t >= q.delay) {
+      q.spawned = true;
+      const p = spawnPolloEntity(q.color, q.isLeader);
+      if (q.isLeader) cinematic.leader = p;
+      else cinematic.chicks.push(p);
+      Sound.spawn();
+    }
+  }
+
+  // Spawn queued crocs during EMERGE
+  if (cinematic.phase === PHASE.EMERGE) {
+    for (const q of cinematic.crocQueue) {
+      if (!q.spawned && cinematic.phaseT >= q.delay) {
+        q.spawned = true;
+        const c = spawnCrocEntity(q.color, true);
+        Sound.launch();
+      }
+    }
+  }
+
+  // ---- Phase transitions ----
+  const p = cinematic.phase;
+  let next = p;
+
+  if (p === PHASE.INIT) {
+    if (cinematic.phaseT > 0.7) next = PHASE.RUN;
+  }
+  else if (p === PHASE.RUN) {
+    // Advance to SUSPENSE when all pollos have been absorbed
+    if (pollos.length === 0 && cinematic.t > 2.5) next = PHASE.SUSPENSE;
+  }
+  else if (p === PHASE.SUSPENSE) {
+    // Hold for suspense, then emerge
+    if (cinematic.phaseT > 1.0) next = PHASE.EMERGE;
+  }
+  else if (p === PHASE.EMERGE) {
+    // Wait until all crocs are spawned AND first one has landed or is arcing
+    const allSpawned = cinematic.crocQueue.every(q => q.spawned);
+    if (allSpawned && cinematic.phaseT > 1.4) next = PHASE.FLYING;
+  }
+  else if (p === PHASE.FLYING) {
+    // All crocs have started falling OR walked to cliff
+    const allFalling = crocs.length > 0 && crocs.every(c => c.state === 'fall');
+    if (allFalling || cinematic.phaseT > 4.5) next = PHASE.FALL;
+  }
+  else if (p === PHASE.FALL) {
+    // Wait for slow-mo drama, then return
+    if (cinematic.phaseT > 3.2) next = PHASE.RETURN;
+  }
+  else if (p === PHASE.RETURN) {
+    if (cinematic.phaseT > 1.4) {
+      endCinematic();
+      return;
+    }
+  }
+
+  if (next !== p) enterPhase(next);
+
+  updateCinematicCamera(dt);
+}
+
+/* ============================================================
+   14. WORLD ANIMATION
    ============================================================ */
 
 function updateWorld(dt, time) {
-  // --- vortex spin & pulse ---
-  fountain.vortexCore.rotation.y += dt * 1.35;
-  fountain.vortexShell.rotation.y -= dt * 2.1;
+  // Animated water fountain
+  animateFountain(time);
 
-  const pulse = 1 + Math.sin(time * 2.6) * 0.045;
-  fountain.vortexCore.scale.set(pulse, 1 + Math.sin(time * 3.3) * 0.06, pulse);
-  fountain.vortexShell.scale.set(
-    1.28 * pulse,
-    (1.12 + Math.sin(time * 3.3 + 1.0) * 0.07),
-    1.28 * pulse
-  );
+  // Water glow flicker
+  waterLight.intensity = 1.6 + Math.sin(time * 3.1) * 0.35;
 
-  // --- orbiting golden shards ---
-  for (const s of fountain.shards) {
-    const d = s.userData;
-    d.angle += dt * d.speed * 0.6;
-    const y = 0.75 + Math.sin(time * 1.8 + d.bob) * 0.85 + d.yOff * 0.2;
-    s.position.set(
-      Math.cos(d.angle) * d.radius,
-      y,
-      Math.sin(d.angle) * d.radius
-    );
-    s.rotation.x += dt * 2.2;
-    s.rotation.y += dt * 1.7;
-  }
-
-  // --- vortex light flicker ---
-  vortexLight.intensity = 2.0 + Math.sin(time * 5.0) * 0.45 + Math.sin(time * 11.0) * 0.18;
-
-  // --- pulsing ground rings ---
-  for (const r of pulseRings) {
-    let t = (time * 0.5 + r.userData.phase) % 1;
-    const s = 1 + t * 2.6;
-    r.scale.set(s, 1, s);
-    r.material.opacity = (1 - t) * 0.72;
-  }
-
-  // --- clouds drift & bob ---
+  // Clouds drift
   for (const c of clouds) {
     c.position.x += c.userData.driftSpeed * dt;
     if (c.position.x > 46) c.position.x = -46;
     c.position.y = c.userData.baseY + Math.sin(time * 0.6 + c.userData.bobPhase) * 0.9;
   }
 
-  // --- floating rocks bob & spin ---
+  // Floating rocks bob
   for (const r of rocks) {
     r.position.y = r.userData.baseY + Math.sin(time * 0.8 + r.userData.bobPhase) * 0.7;
     r.rotation.y += r.userData.spin * dt;
@@ -1810,168 +2310,272 @@ function updateWorld(dt, time) {
 }
 
 /* ============================================================
-   13. HUD / UI BINDING
+   15. HUD / SHOP UI
    ============================================================ */
 
 const elGold      = document.getElementById('goldValue');
 const elEgg       = document.getElementById('eggValue');
-const elLevelNum  = document.getElementById('levelNum');
+const elRankName  = document.getElementById('rankName');
+const elLvlMeta   = document.getElementById('lvlMeta');
 const elLevelBar  = document.getElementById('levelBar');
-const elOdds      = document.getElementById('oddsText');
+const elMultText  = document.getElementById('multText');
 const btnSpawn    = document.getElementById('btnSpawn');
 const btnUpgrade  = document.getElementById('btnUpgrade');
-const btnAuto     = document.getElementById('btnAuto');
+const btnShop     = document.getElementById('btnShop');
 const elUpgradeCost = document.getElementById('upgradeCost');
-const elAutoCost    = document.getElementById('autoCost');
+const elShopEggCount = document.getElementById('shopEggCount');
+const elHint      = document.getElementById('hint');
+
+const shopModal   = document.getElementById('shopModal');
+const shopItemsEl = document.getElementById('shopItems');
+const shopEggsEl  = document.getElementById('shopEggs');
+const shopCloseBtn = document.getElementById('shopClose');
 
 function pulseStat(id) {
   const el = document.getElementById(id);
   el.classList.remove('pop');
-  // force reflow so the animation restarts
   void el.offsetWidth;
   el.classList.add('pop');
 }
 
-/** Cost of the next fountain upgrade (or null if maxed). */
 function nextUpgradeCost() {
-  if (state.level === 1) return CONFIG.costs.upgrade2;
-  if (state.level === 2) return CONFIG.costs.upgrade3;
-  return null;
-}
-
-/** Human-readable odds line for the top-right panel. */
-function oddsString() {
-  if (state.level === 1) {
-    return 'Red Pollo → 🟢 Green Croc <b>100%</b>';
-  }
-  if (state.level === 2) {
-    return '🔵 Blue Croc <b>50%</b> · 🟢 Green Croc <b>50%</b>';
-  }
-  return '✨ Golden Croc <b>14%</b> · 🔵 Blue <b>56%</b> · 🟢 Green <b>30%</b>';
+  if (state.level >= 15) return null;
+  return UPGRADE_COSTS[state.level - 1];
 }
 
 function updateHUD() {
   elGold.textContent = Math.floor(state.gold);
   elEgg.textContent = state.eggs;
-  elLevelNum.textContent = state.level;
-  elLevelBar.style.width = ((state.level / 3) * 100) + '%';
-  elOdds.innerHTML = oddsString();
+  elShopEggCount.textContent = `${state.eggs} Jajek Pollo`;
+
+  elRankName.textContent = RANK_NAMES[state.level - 1];
+  elLvlMeta.textContent = `Poziom ${state.level} / 15`;
+  elLevelBar.style.width = ((state.level / 15) * 100) + '%';
+  elMultText.textContent = `Mnożnik: ×${RANK_MULT[state.level - 1]}`;
 
   const cost = nextUpgradeCost();
   if (cost === null) {
     btnUpgrade.disabled = true;
-    elUpgradeCost.textContent = 'MAX LEVEL ✨';
+    elUpgradeCost.textContent = 'MAX RANGA ✨';
   } else {
-    btnUpgrade.disabled = state.gold < cost;
+    btnUpgrade.disabled = state.gold < cost || cinematic.active;
     elUpgradeCost.textContent = cost + ' 🪙';
   }
 
-  if (state.autoOwned) {
-    btnAuto.disabled = true;
-    elAutoCost.textContent = 'AKTYWNY ✔';
-  } else {
-    btnAuto.disabled = state.gold < CONFIG.costs.auto;
-    elAutoCost.textContent = CONFIG.costs.auto + ' 🪙';
+  btnSpawn.disabled = cinematic.active;
+
+  // Also update shop modal if open
+  if (shopModal.classList.contains('open')) {
+    shopEggsEl.textContent = state.eggs;
   }
 }
 
-/* ------------------------------------------------------------
-   BUTTON ACTIONS
-   ------------------------------------------------------------ */
+/* ---- Shop modal rendering ---- */
+function renderShop() {
+  shopItemsEl.innerHTML = '';
+  shopEggsEl.textContent = state.eggs;
+
+  for (const item of SHOP_ITEMS) {
+    const tier = shopState[item.id];
+    const maxed = tier >= item.maxTier;
+    const cost = maxed ? 0 : shopCost(item);
+
+    const card = document.createElement('div');
+    card.className = 'shopItem' + (maxed ? ' maxed' : '');
+
+    const head = document.createElement('div');
+    head.className = 'itemHead';
+    head.innerHTML = `
+      <span class="itemIcon">${item.icon}</span>
+      <div>
+        <div class="itemName">${item.name}</div>
+        <div class="itemTier">${maxed ? 'MAX' : `Poziom ${tier} / ${item.maxTier}`}</div>
+      </div>
+    `;
+    card.appendChild(head);
+
+    const desc = document.createElement('div');
+    desc.className = 'itemDesc';
+    desc.textContent = item.desc;
+    card.appendChild(desc);
+
+    const eff = document.createElement('div');
+    eff.className = 'itemEffect';
+    if (maxed) {
+      eff.textContent = item.fmtEffect(item.maxTier);
+    } else {
+      eff.innerHTML = `${item.fmtEffect(tier)}<span class="arrow">→</span>${item.fmtEffect(tier + 1)}`;
+    }
+    card.appendChild(eff);
+
+    // Pip indicators
+    const pips = document.createElement('div');
+    pips.className = 'barPips';
+    for (let i = 0; i < item.maxTier; i++) {
+      const pip = document.createElement('div');
+      pip.className = 'pip' + (i < tier ? ' on' : '');
+      pips.appendChild(pip);
+    }
+    card.appendChild(pips);
+
+    // Buy button
+    const buyRow = document.createElement('div');
+    buyRow.className = 'buyRow';
+    const buyBtn = document.createElement('button');
+    buyBtn.className = 'buyBtn' + (maxed ? ' maxed' : '');
+    if (maxed) {
+      buyBtn.textContent = '✓ MAX';
+      buyBtn.disabled = true;
+    } else {
+      buyBtn.textContent = `${cost} 🥚`;
+      buyBtn.disabled = state.eggs < cost;
+      buyBtn.addEventListener('click', () => {
+        if (state.eggs < cost) return;
+        state.eggs -= cost;
+        shopState[item.id]++;
+        state.hudDirty = true;
+        Sound.upgrade();
+        updateHUD();
+        renderShop();
+      });
+    }
+    buyRow.appendChild(buyBtn);
+    card.appendChild(buyRow);
+
+    shopItemsEl.appendChild(card);
+  }
+}
+
+function openShop() {
+  shopModal.classList.add('open');
+  renderShop();
+}
+function closeShop() {
+  shopModal.classList.remove('open');
+}
+
+/* ============================================================
+   16. BUTTON & INPUT BINDINGS
+   ============================================================ */
+
 btnSpawn.addEventListener('click', () => {
-  spawnPollo();
+  Sound.unlock();
+  unlockAudio();
+  startCinematic();
 });
 
 btnUpgrade.addEventListener('click', () => {
+  Sound.unlock();
+  unlockAudio();
   const cost = nextUpgradeCost();
-  if (cost === null || state.gold < cost) return;
+  if (cost === null || state.gold < cost || cinematic.active) return;
 
   state.gold -= cost;
   state.level++;
   state.hudDirty = true;
 
-  // celebration effects
+  Sound.upgrade();
   burstParticles(new THREE.Vector3(0, 2.2, 0), 0xffd75e, 40);
-  burstParticles(new THREE.Vector3(0, 1.2, 0), 0xffffff, 20);
-
-  // camera shake
-  shakeAmount = 0.5;
+  burstParticles(new THREE.Vector3(0, 1.2, 0), 0xffffff, 22);
+  spawnPopup(`RANGA: ${RANK_NAMES[state.level - 1]}`, new THREE.Vector3(0, 3.5, 0), true, 0, 2.4);
 });
 
-btnAuto.addEventListener('click', () => {
-  if (state.autoOwned || state.gold < CONFIG.costs.auto) return;
-  state.gold -= CONFIG.costs.auto;
-  state.autoOwned = true;
-  state.autoTimer = 0;
-  state.hudDirty = true;
-  burstParticles(new THREE.Vector3(-13, 1.5, 0.6), 0x7cc9ff, 24);
+btnShop.addEventListener('click', () => {
+  Sound.unlock();
+  unlockAudio();
+  openShop();
 });
 
-/* ------------------------------------------------------------
-   KEYBOARD SHORTCUTS (bonus)
-   ------------------------------------------------------------ */
+shopCloseBtn.addEventListener('click', () => {
+  closeShop();
+  Sound.pop();
+});
+
+// Close shop by clicking backdrop
+shopModal.addEventListener('click', (e) => {
+  if (e.target === shopModal) closeShop();
+});
+
+// Esc closes shop
 window.addEventListener('keydown', (e) => {
+  if (e.code === 'Escape' && shopModal.classList.contains('open')) closeShop();
   if (e.code === 'Space') {
     e.preventDefault();
-    spawnPollo();
+    if (!cinematic.active && !shopModal.classList.contains('open')) startCinematic();
   }
-  if (e.code === 'KeyU') btnUpgrade.click();
+  if (e.code === 'KeyU') {
+    if (!shopModal.classList.contains('open')) btnUpgrade.click();
+  }
+  if (e.code === 'KeyB') {
+    if (shopModal.classList.contains('open')) closeShop();
+    else openShop();
+  }
 });
 
 /* ============================================================
-   14. CAMERA CONTROLS (custom lightweight orbit)
+   17. CAMERA INPUT (orbit + touch support)
    ============================================================ */
 
 const canvasEl = renderer.domElement;
-const pointer = { down: false, x: 0, y: 0, moved: false };
+const pointer = { down: false, x: 0, y: 0, id: null };
 
 canvasEl.addEventListener('pointerdown', (e) => {
+  if (cinematic.active) return;
   pointer.down = true;
-  pointer.moved = false;
   pointer.x = e.clientX;
   pointer.y = e.clientY;
+  pointer.id = e.pointerId;
   try { canvasEl.setPointerCapture(e.pointerId); } catch (_) {}
 });
-
 canvasEl.addEventListener('pointerup', (e) => {
+  if (e.pointerId !== pointer.id) return;
   pointer.down = false;
+  pointer.id = null;
   try { canvasEl.releasePointerCapture(e.pointerId); } catch (_) {}
 });
-
-canvasEl.addEventListener('pointercancel', () => { pointer.down = false; });
-
+canvasEl.addEventListener('pointercancel', () => {
+  pointer.down = false;
+  pointer.id = null;
+});
 canvasEl.addEventListener('pointermove', (e) => {
-  if (!pointer.down) return;
+  if (!pointer.down || cinematic.active) return;
+  if (e.pointerId !== pointer.id) return;
   const dx = e.clientX - pointer.x;
   const dy = e.clientY - pointer.y;
   pointer.x = e.clientX;
   pointer.y = e.clientY;
-  if (Math.abs(dx) + Math.abs(dy) > 2) pointer.moved = true;
-
   camState.theta -= dx * 0.0062;
   camState.phi = clamp(camState.phi - dy * 0.0052, 0.24, 1.44);
 });
-
 canvasEl.addEventListener('wheel', (e) => {
+  if (cinematic.active) return;
   e.preventDefault();
   camState.radius = clamp(camState.radius + e.deltaY * 0.022, 13, 62);
 }, { passive: false });
 
-/* Simple camera shake for upgrade feedback */
-let shakeAmount = 0;
-const _baseTarget = new THREE.Vector3();
+// Prevent iOS bounce on document
+document.addEventListener('touchmove', (e) => {
+  if (e.target === canvasEl) e.preventDefault();
+}, { passive: false });
 
 /* ============================================================
-   15. WINDOW RESIZE
+   18. RESIZE
    ============================================================ */
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+window.addEventListener('orientationchange', () => {
+  setTimeout(() => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  }, 120);
+});
 
 /* ============================================================
-   16. MAIN GAME LOOP
+   19. MAIN LOOP
    ============================================================ */
 
 let _lastTime = performance.now();
@@ -1981,47 +2585,34 @@ let _hudAccum = 0;
 function animate(now) {
   requestAnimationFrame(animate);
 
-  // delta time, clamped so tab-switching doesn't break physics
   let dt = (now - _lastTime) / 1000;
   _lastTime = now;
   dt = Math.min(dt, 0.05);
   _elapsed += dt;
 
-  /* ---- auto spawner ---- */
-  if (state.autoOwned) {
-    state.autoTimer -= dt;
-    while (state.autoTimer <= 0) {
-      spawnPollo();
-      state.autoTimer += 1.0;
-    }
-  }
+  // Slow-motion factor for entities (not UI / camera)
+  const slowFactor = (cinematic.active && cinematic.slowMo) ? 0.5 : 1.0;
+  const edt = dt * slowFactor;
 
-  /* ---- entities ---- */
-  updatePollos(dt);
-  updateCrocs(dt);
-  updatePendingCrocs(dt);
-  updateFloatingEggs(dt);
+  // 1) Cinematic director (real time)
+  updateCinematic(dt);
 
-  /* ---- world FX ---- */
+  // 2) Entities (slow-mo aware)
+  updatePollos(edt);
+  updateCrocs(edt);
+  updateFloatingEggs(edt);
+
+  // 3) World & FX
   updateWorld(dt, _elapsed);
-  updateParticles(dt);
+  updateParticles(edt);
   updatePopups(dt);
 
-  /* ---- camera (with shake) ---- */
-  if (shakeAmount > 0) {
-    shakeAmount = Math.max(0, shakeAmount - dt * 2.2);
-    const s = shakeAmount * 0.35;
-    camState.target.set(
-      (Math.random() - 0.5) * s,
-      1.6 + (Math.random() - 0.5) * s,
-      (Math.random() - 0.5) * s
-    );
-  } else {
-    camState.target.lerp(_baseTarget, Math.min(1, dt * 6));
+  // 4) Camera (cinematic overrides orbit)
+  if (!cinematic.active) {
+    applyOrbitCamera();
   }
-  updateCamera();
 
-  /* ---- HUD (only when dirty, ~4x per second check) ---- */
+  // 5) HUD (throttled)
   _hudAccum += dt;
   if (state.hudDirty || _hudAccum > 0.25) {
     _hudAccum = 0;
@@ -2033,29 +2624,18 @@ function animate(now) {
 }
 
 /* ============================================================
-   17. BOOT
+   20. BOOT
    ============================================================ */
-
-// initial HUD state
 updateHUD();
-
-// give the player a tiny head start so the first upgrade feels reachable
-state.gold = 0;
-
-// spawn a couple of chickens immediately so the world feels alive
-spawnPollo();
-setTimeout(() => spawnPollo(), 260);
-
-// go!
 requestAnimationFrame(animate);
 
+/* Optional: play music once the user has clicked anything */
+document.addEventListener('click', () => {
+  if (!audioUnlocked) unlockAudio();
+}, { once: true });
+
 /* ============================================================
-   NOTES ON THE UNUSED-FIX HELPER
-   ------------------------------------------------------------
-   createIslandGeometry() writes a placeholder colour for the
-   bottom tip triangles; createIslandGeometryFixed() re-paints
-   the low vertices with the correct dark-rock tone. This keeps
-   the code readable while guaranteeing a clean palette.
+   END
    ============================================================ */
 </script>
 </body>
