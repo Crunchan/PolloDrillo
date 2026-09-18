@@ -24,7 +24,7 @@ html, body {
   overscroll-behavior: none;
   color: #fff;
 }
-canvas { display: block; touch-action: none; }
+canvas { display: block; touch-action: none; cursor: crosshair; }
 input, button { font-family: inherit; }
 
 #hud { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
@@ -77,15 +77,17 @@ input, button { font-family: inherit; }
   font-size: 10.5px; font-weight: 700; letter-spacing: 1.4px;
   text-transform: uppercase; opacity: 0.85;
 }
-#volumePct { color: #ffe27a; font-weight: 800; }
-#volumeSlider {
+.volRow.second { margin-top: 6px; }
+#volumePct, #sfxPct { color: #ffe27a; font-weight: 800; }
+.volSlider {
   -webkit-appearance: none; appearance: none;
   width: 100%; height: 6px; border-radius: 4px;
-  background: linear-gradient(90deg, #ffe27a 0%, #ffab26 100%);
   outline: none; cursor: pointer;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
 }
-#volumeSlider::-webkit-slider-thumb {
+#volumeSlider { background: linear-gradient(90deg, #ffe27a 0%, #ffab26 100%); }
+#sfxSlider { background: linear-gradient(90deg, #a4e878 0%, #268a28 100%); }
+.volSlider::-webkit-slider-thumb {
   -webkit-appearance: none; appearance: none;
   width: 18px; height: 18px; border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, #ffffff, #ffd75e 60%, #d89312);
@@ -93,7 +95,11 @@ input, button { font-family: inherit; }
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255, 200, 60, 0.6);
 }
-#volumeSlider::-moz-range-thumb {
+#sfxSlider::-webkit-slider-thumb {
+  background: radial-gradient(circle at 35% 30%, #ffffff, #b8f39a 60%, #268a28);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 10px rgba(120, 240, 100, 0.6);
+}
+.volSlider::-moz-range-thumb {
   width: 18px; height: 18px; border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, #ffffff, #ffd75e 60%, #d89312);
   border: 2px solid rgba(255, 255, 255, 0.9); cursor: pointer;
@@ -111,22 +117,38 @@ input, button { font-family: inherit; }
   color: #fff; font-size: 20px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-  transition: transform 0.15s;
+  transition: transform 0.15s, box-shadow 0.25s;
   touch-action: manipulation;
 }
 .iconBtn:active { transform: scale(0.9); }
 #btnNight {
   top: calc(240px + env(safe-area-inset-top));
   right: calc(14px + env(safe-area-inset-right));
+  width: 58px; height: 58px;
+  font-size: 26px;
+  border: 2px solid rgba(160, 200, 255, 0.55);
+  background: linear-gradient(180deg, rgba(60, 80, 140, 0.85), rgba(20, 30, 65, 0.95));
+  box-shadow:
+    0 6px 24px rgba(80, 120, 200, 0.5),
+    0 0 30px rgba(120, 180, 255, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  animation: nightPulse 3s ease-in-out infinite;
+}
+@keyframes nightPulse {
+  0%, 100% { box-shadow: 0 6px 24px rgba(80, 120, 200, 0.5), 0 0 30px rgba(120, 180, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3); }
+  50% { box-shadow: 0 6px 30px rgba(80, 120, 200, 0.7), 0 0 50px rgba(140, 200, 255, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.4); }
 }
 #btnInstall {
   top: calc(240px + env(safe-area-inset-top));
-  right: calc(70px + env(safe-area-inset-right));
+  right: calc(82px + env(safe-area-inset-right));
   display: none;
   background: linear-gradient(180deg, #7ee08e, #2d9a4e);
 }
 #btnInstall.show { display: flex; }
 
+/* ============================================================
+   LEADERBOARD
+   ============================================================ */
 #lb {
   position: absolute;
   top: calc(180px + env(safe-area-inset-top));
@@ -225,7 +247,9 @@ input, button { font-family: inherit; }
 .lbRow:nth-child(2) .lbRank { color: #ffd24a; text-shadow: 0 0 10px rgba(255,200,60,0.7); }
 .lbName { font-weight: 800; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .lbDetail { font-size: 10px; opacity: 0.65; }
-.lbGold { color: #ffe27a; font-weight: 800; font-size: 12px; text-align: right; }
+.lbRight { text-align: right; }
+.lbLvBig { color: #ffe27a; font-weight: 800; font-size: 13px; line-height: 1; }
+.lbGold { color: #b8c8d8; font-weight: 700; font-size: 9.5px; opacity: 0.75; margin-top: 1px; }
 
 .lbRowDetail {
   grid-column: 1 / -1;
@@ -239,8 +263,26 @@ input, button { font-family: inherit; }
 .lbRowDetail .dRow { display: flex; justify-content: space-between; gap: 8px; }
 .lbRowDetail .dRow b { color: #ffe27a; font-weight: 800; }
 
-.lbMeCard {
+/* MY STATS TOGGLE */
+.lbMyStatsBtn {
+  width: 100%;
+  background: rgba(255,200,60,0.12);
+  border: 1px solid rgba(255,200,60,0.35);
+  color: #ffe27a;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 11px; font-weight: 800;
+  letter-spacing: 0.6px; text-transform: uppercase;
+  cursor: pointer;
   margin-top: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  touch-action: manipulation;
+}
+.lbMyStatsBtn:active { transform: scale(0.98); }
+.lbMyStatsBtn .arrow { font-size: 10px; opacity: 0.8; }
+
+.lbMeCard {
+  margin-top: 6px;
   padding: 10px 12px;
   background: linear-gradient(180deg, rgba(255,200,60,0.14), rgba(255,200,60,0.03));
   border: 1px solid rgba(255,200,60,0.3);
@@ -278,6 +320,9 @@ input, button { font-family: inherit; }
 }
 #lbToggle.show { display: flex; }
 
+/* ============================================================
+   BUTTONS
+   ============================================================ */
 #buttons {
   position: absolute;
   bottom: calc(20px + env(safe-area-inset-bottom));
@@ -602,7 +647,7 @@ input, button { font-family: inherit; }
   color: #ffe9b3;
 }
 
-/* LOOTBOX — CS:GO style HORIZONTAL reel */
+/* LOOTBOX */
 #lootModal .modalContent { width: min(640px, 100%); }
 .lootHeader {
   padding: 18px 22px 12px;
@@ -612,7 +657,6 @@ input, button { font-family: inherit; }
 }
 .lootBody { padding: 20px 22px 8px; }
 .lootSub { text-align: center; font-size: 12px; opacity: 0.75; margin-bottom: 14px; }
-
 .reel {
   position: relative;
   width: 100%; height: 140px;
@@ -663,19 +707,14 @@ input, button { font-family: inherit; }
   border-left: 8px solid transparent;
   border-right: 8px solid transparent;
 }
-.reelPointer::before {
-  top: -2px; border-top: 10px solid #ffe27a;
-}
-.reelPointer::after {
-  bottom: -2px; border-bottom: 10px solid #ffe27a;
-}
+.reelPointer::before { top: -2px; border-top: 10px solid #ffe27a; }
+.reelPointer::after { bottom: -2px; border-bottom: 10px solid #ffe27a; }
 .reel::before, .reel::after {
   content: ''; position: absolute; top: 0; bottom: 0; width: 40px;
   pointer-events: none; z-index: 4;
 }
 .reel::before { left: 0; background: linear-gradient(90deg, rgba(0,0,0,0.75), transparent); }
 .reel::after { right: 0; background: linear-gradient(-90deg, rgba(0,0,0,0.75), transparent); }
-
 .lootFooter { padding: 10px 22px 22px; display: flex; justify-content: center; gap: 10px; }
 #lootOpenBtn {
   flex: 1;
@@ -730,11 +769,11 @@ input, button { font-family: inherit; }
   .stat .val { font-size: 18px; }
   #levelPanel { min-width: 180px; }
   .rankName { font-size: 14px; }
-  #volumePanel { top: calc(148px + env(safe-area-inset-top)); min-width: 180px; padding: 6px 12px 8px; }
-  #lb { width: 230px; top: calc(210px + env(safe-area-inset-top)); max-height: calc(100vh - 320px); }
-  #lbToggle { top: calc(210px + env(safe-area-inset-top)); }
-  #btnNight { top: calc(230px + env(safe-area-inset-top)); right: calc(14px + env(safe-area-inset-right)); width: 40px; height: 40px; font-size: 17px; }
-  #btnInstall { top: calc(230px + env(safe-area-inset-top)); right: calc(64px + env(safe-area-inset-right)); width: 40px; height: 40px; font-size: 17px; }
+  #volumePanel { top: calc(170px + env(safe-area-inset-top)); min-width: 180px; padding: 6px 12px 8px; }
+  #lb { width: 230px; top: calc(230px + env(safe-area-inset-top)); max-height: calc(100vh - 340px); }
+  #lbToggle { top: calc(230px + env(safe-area-inset-top)); }
+  #btnNight { top: calc(250px + env(safe-area-inset-top)); right: calc(14px + env(safe-area-inset-right)); width: 50px; height: 50px; font-size: 22px; }
+  #btnInstall { top: calc(250px + env(safe-area-inset-top)); right: calc(74px + env(safe-area-inset-right)); width: 40px; height: 40px; font-size: 17px; }
   #buttons { max-width: calc(100vw - 160px); gap: 10px; }
   .btn { min-width: 140px; padding: 10px 14px 11px; font-size: 12.5px; }
   .btn .bSub { font-size: 9.5px; }
@@ -749,8 +788,8 @@ input, button { font-family: inherit; }
   #statsPanel { min-width: 0; }
   #levelPanel { min-width: 0; }
   #volumePanel { min-width: 0; }
-  #lb { width: calc(100vw - 28px); left: 14px; top: calc(240px + env(safe-area-inset-top)); max-height: calc(100vh - 320px); }
-  #lbToggle { top: calc(240px + env(safe-area-inset-top)); }
+  #lb { width: calc(100vw - 28px); left: 14px; top: calc(280px + env(safe-area-inset-top)); max-height: calc(100vh - 380px); }
+  #lbToggle { top: calc(280px + env(safe-area-inset-top)); }
   #buttons { max-width: calc(100vw - 20px); gap: 8px; bottom: calc(80px + env(safe-area-inset-bottom)); }
   .btn { min-width: 100px; flex: 1; max-width: 170px; font-size: 11px; padding: 9px 8px 10px; }
   .btn .bSub { font-size: 9px; }
@@ -758,12 +797,10 @@ input, button { font-family: inherit; }
   #btnShop .bSub { display: none; }
   #btnNight { top: auto; bottom: calc(20px + env(safe-area-inset-bottom)); right: calc(14px + env(safe-area-inset-right)); }
   #btnInstall { top: auto; bottom: calc(20px + env(safe-area-inset-bottom)); right: calc(14px + env(safe-area-inset-right)); }
-  #btnInstall.show ~ #btnNight { right: calc(70px + env(safe-area-inset-right)); }
+  #btnInstall.show ~ #btnNight { right: calc(80px + env(safe-area-inset-right)); }
 }
 
-/* ============================================================
-   MOBILE LANDSCAPE — fullscreen phone rotated
-   ============================================================ */
+/* MOBILE LANDSCAPE — zwiększone odstępy żeby ranking nie nachodził */
 @media (orientation: landscape) and (max-height: 560px) {
   .panel { padding: 6px 10px; border-radius: 12px; }
   #statsPanel {
@@ -784,34 +821,35 @@ input, button { font-family: inherit; }
   .bar { height: 8px; margin-top: 4px; }
   .mult { font-size: 10.5px; margin-top: 4px; }
   #volumePanel {
-    top: calc(100px + env(safe-area-inset-top));
+    top: calc(90px + env(safe-area-inset-top));
     right: calc(8px + env(safe-area-inset-right));
     min-width: 160px;
     padding: 5px 10px 6px;
   }
   .volRow { font-size: 9px; letter-spacing: 1px; }
-  #volumeSlider { height: 5px; }
-  #volumeSlider::-webkit-slider-thumb { width: 14px; height: 14px; }
+  .volSlider { height: 5px; }
+  .volSlider::-webkit-slider-thumb { width: 14px; height: 14px; }
   #btnNight {
-    top: auto;
-    bottom: calc(58px + env(safe-area-inset-bottom));
+    top: calc(160px + env(safe-area-inset-top));
     right: calc(8px + env(safe-area-inset-right));
-    width: 36px; height: 36px; font-size: 15px;
+    width: 46px; height: 46px; font-size: 20px;
+    bottom: auto;
   }
   #btnInstall {
-    top: auto;
-    bottom: calc(58px + env(safe-area-inset-bottom));
-    right: calc(52px + env(safe-area-inset-right));
+    top: calc(160px + env(safe-area-inset-top));
+    right: calc(60px + env(safe-area-inset-right));
     width: 36px; height: 36px; font-size: 15px;
+    bottom: auto;
   }
+  /* RANKING — dużo niżej i węższy żeby nie nachodził na nic */
   #lb {
-    top: calc(100px + env(safe-area-inset-top));
+    top: calc(160px + env(safe-area-inset-top));
     left: calc(8px + env(safe-area-inset-left));
-    width: 200px;
-    max-height: calc(100vh - 160px);
+    width: 175px;
+    max-height: calc(100vh - 175px);
   }
   #lbToggle {
-    top: calc(100px + env(safe-area-inset-top));
+    top: calc(160px + env(safe-area-inset-top));
     left: calc(8px + env(safe-area-inset-left));
     width: 34px; height: 34px; font-size: 15px;
   }
@@ -824,9 +862,11 @@ input, button { font-family: inherit; }
   .lbRow { padding: 5px; }
   .lbName { font-size: 11px; }
   .lbDetail { font-size: 9px; }
-  .lbGold { font-size: 11px; }
+  .lbLvBig { font-size: 11px; }
+  .lbGold { font-size: 8.5px; }
   .lbMeCard { padding: 8px 10px; font-size: 10px; }
   .lbDelete { padding: 5px 8px; font-size: 10px; }
+  .lbMyStatsBtn { padding: 6px 10px; font-size: 9.5px; margin-top: 6px; }
 
   #buttons {
     bottom: calc(8px + env(safe-area-inset-bottom));
@@ -856,7 +896,6 @@ input, button { font-family: inherit; }
   #hint { display: none; }
   .popup { font-size: 16px; }
 
-  /* Modal adjustments for landscape */
   .modalOverlay { padding: 6px; align-items: center; }
   .modalContent {
     max-height: 96vh;
@@ -884,7 +923,6 @@ input, button { font-family: inherit; }
   .dangerZone { padding: 8px 14px 12px; font-size: 10px; }
   .dangerBtn { padding: 7px 11px; font-size: 11px; }
 
-  /* Intro */
   #introModal .modalContent { width: min(560px, 96vw); }
   .introBody { padding: 14px 18px 4px; line-height: 1.4; }
   .introTitle { font-size: 19px; }
@@ -906,7 +944,6 @@ input, button { font-family: inherit; }
   .btnPrimary, .btnSecondary { padding: 8px 12px; font-size: 11px; border-radius: 11px; }
   .accountList { gap: 6px; }
 
-  /* Lootbox landscape */
   #lootModal .modalContent { width: min(640px, 96vw); }
   .lootHeader { padding: 10px 16px 8px; }
   .lootBody { padding: 12px 16px 4px; }
@@ -920,14 +957,16 @@ input, button { font-family: inherit; }
   #toast { font-size: 11px; padding: 8px 14px; }
 }
 
-/* Very small landscape phones */
 @media (orientation: landscape) and (max-height: 400px) {
-  #lb { max-height: calc(100vh - 140px); }
+  #lb { top: calc(140px + env(safe-area-inset-top)); max-height: calc(100vh - 150px); }
+  #lbToggle { top: calc(140px + env(safe-area-inset-top)); }
+  #volumePanel { top: calc(78px + env(safe-area-inset-top)); }
+  #btnNight { top: calc(140px + env(safe-area-inset-top)); }
+  #btnInstall { top: calc(140px + env(safe-area-inset-top)); }
   .reel { height: 90px; }
   .reelItem { width: 90px; height: 90px; }
   .reelItem .ic { font-size: 26px; }
   .reelItem .nm { font-size: 8.5px; }
-  #volumePanel { top: calc(88px + env(safe-area-inset-top)); }
 }
 </style>
 </head>
@@ -963,10 +1002,15 @@ input, button { font-family: inherit; }
       <span>🎵 Muzyka</span>
       <span id="volumePct">40%</span>
     </div>
-    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.4" aria-label="Głośność">
+    <input type="range" id="volumeSlider" class="volSlider" min="0" max="1" step="0.01" value="0.4" aria-label="Głośność muzyki">
+    <div class="volRow second">
+      <span>🔊 Dźwięki</span>
+      <span id="sfxPct">80%</span>
+    </div>
+    <input type="range" id="sfxSlider" class="volSlider" min="0" max="1" step="0.01" value="0.8" aria-label="Głośność dźwięków">
   </div>
 
-  <button class="iconBtn" id="btnNight" title="Dzień/Noc">☀️</button>
+  <button class="iconBtn" id="btnNight" title="Dzień/Noc">🌙</button>
   <button class="iconBtn" id="btnInstall" title="Zainstaluj">📲</button>
 
   <button id="lbToggle" title="Pokaż ranking">🏆</button>
@@ -979,15 +1023,13 @@ input, button { font-family: inherit; }
         <button id="lbClose" title="Schowaj">◀</button>
       </div>
     </div>
-    <div id="lbBody">
-      <button class="lbSaveBtn" id="lbSaveBtn">💾 Zapisz na serwer</button>
-    </div>
+    <div id="lbBody"></div>
   </div>
 
   <div id="buttons">
     <button class="btn" id="btnSpawn">
       🐔 Pollo!
-      <span class="bSub">1 klik = 1 Pollo leci do Fontanny</span>
+      <span class="bSub">Klik gdziekolwiek = Pollo!</span>
     </button>
     <button class="btn" id="btnUpgrade">
       ✨ Fontanna
@@ -1005,9 +1047,9 @@ input, button { font-family: inherit; }
   </button>
 
   <div id="hint">
-    🐔 Klikaj <span class="hot">Pollo!</span><br>
+    🐔 Klik gdziekolwiek = Pollo!<br>
     🐊 Cocodrillo → złoto<br>
-    🖱️ Przeciągnij kamerę
+    🖱️ Przeciągnij = kamera
   </div>
 </div>
 
@@ -1019,7 +1061,7 @@ input, button { font-family: inherit; }
   <div class="modalContent">
     <div class="introBody">
       <div class="introTitle">🐔 POLLO &amp; COCODRILO 🐊</div>
-      <div class="introSub">Symulator POLLO · v1.4</div>
+      <div class="introSub">Symulator POLLO · v1.5</div>
 
       <div id="accountSection">
         <div class="introName">
@@ -1041,19 +1083,19 @@ input, button { font-family: inherit; }
       </div>
 
       <div class="introSteps">
-        <div class="row"><span class="n">1</span><div>Klikaj <b>Pollo!</b> — każdy Pollo wpada do Fontanny.</div></div>
-        <div class="row"><span class="n">2</span><div>Z Fontanny wychodzą <b>Cocodrillo</b> 🐊</div></div>
+        <div class="row"><span class="n">1</span><div>Klikaj <b>gdziekolwiek</b> — Pollo wpada do Fontanny.</div></div>
+        <div class="row"><span class="n">2</span><div>Z Fontanny wychodzą <b>Cocodrillo</b> 🐊 (interwały = wejściu)</div></div>
         <div class="row"><span class="n">3</span><div>Cocodrillo idą do klifu i <b>spadają</b> → złoto 🪙</div></div>
         <div class="row"><span class="n">4</span><div><b>Ulepszaj Fontannę</b> (30 poziomów!) za złoto.</div></div>
-        <div class="row"><span class="n">5</span><div>Otwieraj <b>Jaja Pollo</b> za 1 jajo — jackpot!</div></div>
+        <div class="row"><span class="n">5</span><div>Otwieraj <b>Jaja Pollo</b> — nagrody skalują z poziomem!</div></div>
         <div class="row"><span class="n">6</span><div>Kliknij <b>💾 Zapisz na serwer</b> aby zapisać online.</div></div>
       </div>
 
       <div class="introInfo">
         <span class="lbl">🎵 Muzyka</span>
         <div>Utwór pochodzi z YouTube — prawa do właścicieli.</div>
-        <span class="lbl">📅 Update v1.4</span>
-        <div>System kont (max 2), poziomy lootbox, mobile landscape.</div>
+        <span class="lbl">📅 Update v1.5</span>
+        <div>Brak limitów, klik gdziekolwiek, skalowanie nagród, ranking po lvlu, SFX volume.</div>
         <span class="lbl">🐙 GitHub</span>
         <div><a href="https://github.com/Crunchan/PolloDrillo" target="_blank" rel="noopener">github.com/Crunchan/PolloDrillo</a></div>
       </div>
@@ -1084,7 +1126,7 @@ input, button { font-family: inherit; }
       <button class="modalClose" id="lootClose">✕</button>
     </div>
     <div class="lootBody">
-      <div class="lootSub">Otwórz jajo za 1 Jajo Pollo — wylosuj nagrodę!</div>
+      <div class="lootSub">Otwórz jajo za 1 Jajo Pollo — nagrody skalują z poziomem!</div>
       <div class="reel">
         <div class="reelStrip" id="reelStrip"></div>
         <div class="reelPointer"></div>
@@ -1104,7 +1146,7 @@ input, button { font-family: inherit; }
 import * as THREE from 'three';
 
 /* ============================================================
-   PWA MANIFEST (dynamiczny)
+   PWA MANIFEST
    ============================================================ */
 (function setupPWA() {
   const iconSvg = (size) => `data:image/svg+xml;utf8,${encodeURIComponent(`
@@ -1188,7 +1230,6 @@ const ServerAPI = (() => {
       return j.record || { players: {} };
     } catch (e) { return null; }
   }
-
   async function writeAll(data) {
     if (!online) return false;
     try {
@@ -1200,7 +1241,6 @@ const ServerAPI = (() => {
       return r.ok;
     } catch (e) { return false; }
   }
-
   async function upsertPlayer(playerId, payload) {
     if (!online) return false;
     const data = await fetchAll() || { version: 1, players: {} };
@@ -1208,7 +1248,6 @@ const ServerAPI = (() => {
     data.players[playerId] = payload;
     return await writeAll(data);
   }
-
   async function deletePlayer(playerId) {
     if (!online) return false;
     const data = await fetchAll();
@@ -1216,14 +1255,12 @@ const ServerAPI = (() => {
     delete data.players[playerId];
     return await writeAll(data);
   }
-
   async function getLeaderboard() {
     if (!online) return [];
     const data = await fetchAll();
     if (!data || !data.players) return [];
     return Object.entries(data.players).map(([id, p]) => ({ id, ...p }));
   }
-
   return { online, fetchAll, writeAll, upsertPlayer, deletePlayer, getLeaderboard };
 })();
 
@@ -1279,9 +1316,7 @@ function mergeGeos(list) {
   return out;
 }
 
-/* ============================================================
-   RENDERER
-   ============================================================ */
+/* RENDERER */
 const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -1299,7 +1334,6 @@ const camState = {
   target: new THREE.Vector3(0, 1.6, 0),
   theta: 0, phi: 0.95, radius: 27
 };
-
 function applyOrbitCamera() {
   const { target, theta, phi, radius } = camState;
   camera.position.set(
@@ -1313,7 +1347,6 @@ applyOrbitCamera();
 
 const hemi = new THREE.HemisphereLight(0xe8f2ff, 0x88a060, 1.15);
 scene.add(hemi);
-
 const sun = new THREE.DirectionalLight(0xfff8e8, 1.8);
 sun.position.set(20, 28, 15);
 sun.castShadow = true;
@@ -1323,10 +1356,8 @@ sun.shadow.camera.top = 30; sun.shadow.camera.bottom = -30;
 sun.shadow.camera.near = 1; sun.shadow.camera.far = 100;
 sun.shadow.bias = -0.0012; sun.shadow.normalBias = 0.025;
 scene.add(sun, sun.target);
-
 const nightAmbient = new THREE.HemisphereLight(0x3a5a90, 0x14202c, 0);
 scene.add(nightAmbient);
-
 const waterLight = new THREE.PointLight(0x7ecdff, 1.5, 14, 2);
 waterLight.position.set(0, 1.5, 0);
 scene.add(waterLight);
@@ -1352,7 +1383,6 @@ function makeSkyDome(topHex, bottomHex, exp = 0.85) {
   m.renderOrder = -1000;
   return m;
 }
-
 const daySky = makeSkyDome(0x9cc4e0, 0xf5f0e6, 0.75);
 const nightSky = makeSkyDome(0x0a1430, 0x1c2a48, 0.7);
 nightSky.visible = false;
@@ -1386,7 +1416,6 @@ const stars = (() => {
   scene.add(p);
   return p;
 })();
-
 const moon = (() => {
   const m = new THREE.Mesh(
     new THREE.SphereGeometry(4.5, 16, 12),
@@ -1434,7 +1463,6 @@ function createIslandGeometry(radius, depth, segments = 10) {
   for (let s = 0; s < segments; s++) pushTri(pos, col, last[s], last[(s + 1) % segments], tip, 0x51392a, 0.11);
   return buildGeometry(pos, col);
 }
-
 function createIsland(x, z, radius, depth) {
   const group = new THREE.Group();
   group.position.set(x, 0, z);
@@ -1463,7 +1491,6 @@ function createIsland(x, z, radius, depth) {
   scene.add(group);
   return group;
 }
-
 function createPrismGeometry(w, h, d, color) {
   const pos = [], col = [];
   const x = w / 2, z = d / 2;
@@ -1477,7 +1504,6 @@ function createPrismGeometry(w, h, d, color) {
   pushTri(pos, col, A, D, E, color, 0.06); pushTri(pos, col, A, E, B, color, 0.06);
   return buildGeometry(pos, col);
 }
-
 function createBarn(x, z, rotY = 0) {
   const group = new THREE.Group();
   group.position.set(x, 0, z); group.rotation.y = rotY;
@@ -1505,7 +1531,6 @@ function createBarn(x, z, rotY = 0) {
   scene.add(group);
   return group;
 }
-
 function createBridge(ax, az, bx, bz, width) {
   const dx = bx - ax, dz = bz - az;
   const len = Math.hypot(dx, dz);
@@ -1632,7 +1657,6 @@ const groundGlow = new THREE.Mesh(
 groundGlow.position.y = 0.03;
 fountainGroup.add(groundGlow);
 
-/* FOUNTAIN ADDONS — 30 poziomów */
 const fountainAddons = [];
 function addAddon(level, group, animated = null) {
   group.visible = false;
@@ -1888,7 +1912,6 @@ function animateFountain(time) {
 
 /* CLOUDS */
 const clouds = [];
-
 function createCloud(x, y, z, scale) {
   const g = new THREE.Group();
   const parts = [];
@@ -1909,7 +1932,6 @@ function createCloud(x, y, z, scale) {
 createIsland(-12, 0, 4.6, 3.2);
 createIsland(0, 0, 5.0, 3.8);
 createIsland(12, 0, 4.6, 3.2);
-
 createBarn(-13.1, -1.9, 0.22);
 createBridge(-8.6, 0, -4.4, 0, 1.9);
 createBridge(4.4, 0, 8.6, 0, 1.9);
@@ -1923,7 +1945,6 @@ createCloud(6, 18, 20, 1.2);
 createCloud(-30, 12, -2, 1.4);
 
 const lamps = [];
-
 function createLamp(x, z, rotY = 0) {
   const g = new THREE.Group();
   g.position.set(x, 0, z);
@@ -1935,22 +1956,18 @@ function createLamp(x, z, rotY = 0) {
   arm.translate(0.25, 3.0, 0);
   g.add(new THREE.Mesh(colorize(arm, 0x2a1f16, 0.06), MAT.body));
   g.add(new THREE.Mesh(colorize(new THREE.BoxGeometry(0.34, 0.28, 0.34).translate(0.5, 3.0, 0), 0x3a2a1a, 0.08), MAT.body));
-
   const bulbMat = new THREE.MeshBasicMaterial({ color: 0xffd680 });
   const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.14, 10, 8), bulbMat);
   bulb.position.set(0.5, 2.86, 0);
   g.add(bulb);
-
   const light = new THREE.PointLight(0xffb060, 0, 20, 1.4);
   light.position.set(0.5, 2.85, 0);
   g.add(light);
-
   scene.add(g);
   g.userData = { light, bulb };
   lamps.push(g);
   return g;
 }
-
 createLamp(-9.5, -2.6, 0.3);
 createLamp(9.5, 2.6, -0.3);
 createLamp(0, -4.6, 0);
@@ -2004,7 +2021,6 @@ function createPolloGeometry(pal) {
   merged.scale(S, S, S);
   return merged;
 }
-
 const polloGeo = {};
 for (const k of Object.keys(CHICKEN_PALETTES)) polloGeo[k] = createPolloGeometry(CHICKEN_PALETTES[k]);
 
@@ -2012,7 +2028,6 @@ const eyeGlowGeo = new THREE.SphereGeometry(0.05, 8, 6);
 const eyeGlowMat = new THREE.MeshBasicMaterial({ color: 0xff1010 });
 const eyeGlowMatHalo = new THREE.MeshBasicMaterial({ color: 0xff1010, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false });
 const eyeGlowHaloGeo = new THREE.SphereGeometry(0.13, 8, 6);
-
 function attachNightEyes(mesh) {
   const g = new THREE.Group();
   const ex = 0.145 * 0.72, ey = 0.83 * 0.72, ez = 0.345 * 0.72;
@@ -2080,7 +2095,6 @@ function createCrocGeometry(pal) {
   merged.scale(S, S, S);
   return merged;
 }
-
 const crocGeo = {};
 for (const k of Object.keys(CROC_PALETTES)) crocGeo[k] = createCrocGeometry(CROC_PALETTES[k]);
 
@@ -2105,16 +2119,13 @@ const pVel = new Float32Array(PCOUNT * 3);
 const pLife = new Float32Array(PCOUNT);
 let pCursor = 0;
 for (let i = 0; i < PCOUNT; i++) pPositions[i * 3 + 1] = -9999;
-
 const particleGeo = new THREE.BufferGeometry();
 particleGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
 particleGeo.setAttribute('color', new THREE.BufferAttribute(pColors, 3));
-
 const particleMat = new THREE.PointsMaterial({ size: 0.26, vertexColors: true, sizeAttenuation: true, transparent: true, depthWrite: false });
 const particleSystem = new THREE.Points(particleGeo, particleMat);
 particleSystem.frustumCulled = false;
 scene.add(particleSystem);
-
 function burstParticles(pos, colorHex, count) {
   const c = new THREE.Color(colorHex);
   for (let i = 0; i < count; i++) {
@@ -2133,7 +2144,6 @@ function burstParticles(pos, colorHex, count) {
   particleGeo.attributes.position.needsUpdate = true;
   particleGeo.attributes.color.needsUpdate = true;
 }
-
 function updateParticles(dt) {
   let dirty = false;
   for (let i = 0; i < PCOUNT; i++) {
@@ -2153,7 +2163,6 @@ function updateParticles(dt) {
 const popupLayer = document.getElementById('popups');
 const popups = [];
 const _projVec = new THREE.Vector3();
-
 function spawnPopup(text, worldPos, isEgg = false, delay = 0, life = 1.9) {
   const el = document.createElement('div');
   el.className = 'popup' + (isEgg ? ' egg' : '');
@@ -2162,7 +2171,6 @@ function spawnPopup(text, worldPos, isEgg = false, delay = 0, life = 1.9) {
   popupLayer.appendChild(el);
   popups.push({ el, pos: worldPos.clone(), life, maxLife: life, delay, isEgg });
 }
-
 function updatePopups(dt) {
   for (let i = popups.length - 1; i >= 0; i--) {
     const p = popups[i];
@@ -2186,9 +2194,13 @@ function updatePopups(dt) {
 const bgMusic = document.getElementById('bgMusic');
 const volumeSlider = document.getElementById('volumeSlider');
 const volumePct = document.getElementById('volumePct');
+const sfxSlider = document.getElementById('sfxSlider');
+const sfxPct = document.getElementById('sfxPct');
 
 bgMusic.volume = 0.4;
 volumePct.textContent = '40%';
+let sfxVolume = 0.8;
+sfxPct.textContent = '80%';
 
 let audioUnlocked = false;
 function unlockAudio() {
@@ -2201,6 +2213,12 @@ volumeSlider.addEventListener('input', (e) => {
   const v = parseFloat(e.target.value);
   bgMusic.volume = v;
   volumePct.textContent = Math.round(v * 100) + '%';
+  state.dirty = true;
+  saveLocal();
+});
+sfxSlider.addEventListener('input', (e) => {
+  sfxVolume = parseFloat(e.target.value);
+  sfxPct.textContent = Math.round(sfxVolume * 100) + '%';
   state.dirty = true;
   saveLocal();
 });
@@ -2220,7 +2238,7 @@ const Sound = (() => {
     osc.type = type;
     osc.frequency.setValueAtTime(fA, t0);
     if (fB !== fA) osc.frequency.exponentialRampToValueAtTime(Math.max(1, fB), t0 + dur);
-    gain.gain.setValueAtTime(vol, t0);
+    gain.gain.setValueAtTime(vol * sfxVolume, t0);
     gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
     osc.connect(gain).connect(c.destination);
     osc.start(t0); osc.stop(t0 + dur + 0.02);
@@ -2235,7 +2253,7 @@ const Sound = (() => {
     const src = c.createBufferSource(); src.buffer = buf;
     const f = c.createBiquadFilter(); f.type = ft; f.frequency.setValueAtTime(ff, t0);
     const g = c.createGain();
-    g.gain.setValueAtTime(vol, t0);
+    g.gain.setValueAtTime(vol * sfxVolume, t0);
     g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
     src.connect(f).connect(g).connect(c.destination);
     src.start(t0); src.stop(t0 + dur + 0.02);
@@ -2252,7 +2270,7 @@ const Sound = (() => {
       const o = c.createOscillator(); const g = c.createGain();
       o.type = 'sine'; o.frequency.setValueAtTime(900, t0);
       o.frequency.exponentialRampToValueAtTime(120, t0 + 0.55);
-      g.gain.setValueAtTime(0.07, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.55);
+      g.gain.setValueAtTime(0.07 * sfxVolume, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.55);
       o.connect(g).connect(c.destination);
       o.start(t0); o.stop(t0 + 0.6);
     },
@@ -2281,13 +2299,11 @@ const RANK_NAMES = [
   'POLLO PRIME', 'COCODRILO OMEGA', 'KOSMICZNY WŁADCA', 'STWÓRCA',
   'POLLO DRILLO', '🐔∞🐊'
 ];
-
 const RANK_MULT = [
   1, 1.4, 1.8, 2.4, 3.2, 4.2, 5.5, 7, 9, 11.5,
   14.5, 18, 22, 27, 33, 40, 48, 58, 70, 84,
   100, 120, 145, 175, 210, 250, 300, 360, 430, 520
 ];
-
 const UPGRADE_COSTS = [
   1000, 3500, 10000, 28000, 75000, 190000, 480000, 1200000, 3000000, 7500000,
   18000000, 45000000, 110000000, 270000000, 660000000, 1600000000, 4000000000,
@@ -2295,13 +2311,12 @@ const UPGRADE_COSTS = [
   950000000000, 2400000000000, 6000000000000, 15000000000000,
   38000000000000, 95000000000000, 240000000000000
 ];
-
 const COLOR_VALUES = { white: 3, red: 6, blue: 12, yellow: 20, green: 35, pink: 55 };
 
-/* === ACCOUNTS === */
+function getRankMult() { return RANK_MULT[Math.min(state.level - 1, RANK_MULT.length - 1)]; }
+
 const ACCOUNTS_KEY = 'pollo_accounts_v1';
 const MAX_ACCOUNTS = 2;
-
 let playerId = null;
 let SAVE_KEY = 'pollo_cocodrillo_v3';
 
@@ -2316,7 +2331,7 @@ function newAccountId() {
   return 'p_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 }
 
-// Migracja starego save'a (bez kont) na pierwsze konto
+// Migracja
 (function migrateLegacySave() {
   const accounts = getAccounts();
   if (accounts.length > 0) return;
@@ -2341,7 +2356,7 @@ const state = {
   dirty: false,
   playerName: 'Pollo',
   introSeen: false,
-  nightMode: false,
+  nightMode: true,   // Domyślnie NOC
   eggProgress: 0,
   colorIndex: 0,
   clickCount: 0,
@@ -2353,6 +2368,8 @@ const state = {
     playtime: 0
   }
 };
+
+let myStatsOpen = false;
 
 const SHOP_ITEMS = [
   { id: 'goldMult', icon: '🪙', name: 'Złoty Mnożnik Cocodrillo', desc: 'Każdy Cocodrillo daje więcej złota.', baseCost: 2, costScale: 1.5, maxTier: 15, fmtEffect: (t) => `+${t * 30}% złota` },
@@ -2384,6 +2401,7 @@ function buildSavePayload() {
     shop: shopState,
     night: state.nightMode,
     volume: bgMusic.volume,
+    sfxVolume: sfxVolume,
     eggProgress: state.eggProgress,
     colorIndex: state.colorIndex,
     clickCount: state.clickCount,
@@ -2391,7 +2409,6 @@ function buildSavePayload() {
     updatedAt: Date.now()
   };
 }
-
 function saveLocal() {
   if (!playerId) return;
   try {
@@ -2401,14 +2418,12 @@ function saveLocal() {
     }));
   } catch (e) {}
 }
-
 function saveGame() {
   if (!playerId) return;
   saveLocal();
   pendingServerSave = true;
   updateSaveBtnState();
 }
-
 async function saveToServer() {
   if (!playerId) return false;
   if (!ServerAPI.online) {
@@ -2440,7 +2455,6 @@ async function saveToServer() {
   }
   return ok;
 }
-
 function setSaveBtnMode(mode) {
   const btn = document.getElementById('lbSaveBtn');
   if (!btn) return;
@@ -2451,7 +2465,6 @@ function setSaveBtnMode(mode) {
   else if (mode === 'error') { btn.classList.add('error'); btn.textContent = '❌ Błąd zapisu'; btn.disabled = true; }
   else updateSaveBtnState();
 }
-
 function updateSaveBtnState() {
   const btn = document.getElementById('lbSaveBtn');
   if (!btn) return;
@@ -2483,7 +2496,6 @@ function updateSaveBtnState() {
     btn.disabled = true;
   }
 }
-
 let _toastTimer = null;
 function showToast(msg, type = 'ok') {
   const t = document.getElementById('toast');
@@ -2493,7 +2505,6 @@ function showToast(msg, type = 'ok') {
   clearTimeout(_toastTimer);
   _toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
 }
-
 setInterval(() => {
   const btn = document.getElementById('lbSaveBtn');
   if (!btn) return;
@@ -2510,7 +2521,7 @@ function resetStateForAccount() {
   state.dirty = false;
   state.playerName = 'Pollo';
   state.introSeen = true;
-  state.nightMode = false;
+  state.nightMode = true;
   state.eggProgress = 0;
   state.colorIndex = 0;
   state.clickCount = 0;
@@ -2530,11 +2541,16 @@ function loadGame() {
     if (typeof data.eggs === 'number') state.eggs = data.eggs;
     if (typeof data.level === 'number') state.level = clamp(data.level, 1, 30);
     if (data.shop) for (const k of Object.keys(shopState)) if (typeof data.shop[k] === 'number') shopState[k] = data.shop[k];
-    state.nightMode = !!data.night;
+    state.nightMode = data.night !== undefined ? !!data.night : true;
     if (typeof data.volume === 'number') {
       bgMusic.volume = data.volume;
       volumeSlider.value = data.volume;
       volumePct.textContent = Math.round(data.volume * 100) + '%';
+    }
+    if (typeof data.sfxVolume === 'number') {
+      sfxVolume = data.sfxVolume;
+      sfxSlider.value = data.sfxVolume;
+      sfxPct.textContent = Math.round(data.sfxVolume * 100) + '%';
     }
     if (typeof data.eggProgress === 'number') state.eggProgress = data.eggProgress;
     if (typeof data.colorIndex === 'number') state.colorIndex = data.colorIndex;
@@ -2553,7 +2569,7 @@ function resetGame(serverToo = false) {
   state.level = 1;
   for (const k of Object.keys(shopState)) shopState[k] = 0;
   state.eggProgress = 0;
-  state.nightMode = false;
+  state.nightMode = true;
   state.colorIndex = 0;
   state.clickCount = 0;
   state.stats = { crocsFallen: 0, pollosSpawned: 0, lootboxesOpened: 0, startedAt: Date.now(), playtime: 0 };
@@ -2635,17 +2651,12 @@ const PATH_CROC = [
   new THREE.Vector3(15.8, 0, 0)
 ];
 
-/* ENTITIES */
+/* ENTITIES — bez limitów */
 const pollos = [];
 const crocs = [];
-const pendingCrocs = [];
 const floatingEggs = [];
-const MAX_ENTITIES = 80;
-let crocSpawnTimer = 0;
-let idleTime = 0;
 
 function spawnPolloEntity(color, isLeader) {
-  if (pollos.length + crocs.length >= MAX_ENTITIES) return null;
   const geo = polloGeo[color] || polloGeo.red;
   const mesh = new THREE.Mesh(geo, MAT.body);
   mesh.castShadow = true;
@@ -2674,7 +2685,6 @@ function spawnPolloEntity(color, isLeader) {
 }
 
 function spawnCrocEntity(color) {
-  if (crocs.length >= MAX_ENTITIES) return null;
   const geo = crocGeo[color] || crocGeo.green;
   const mesh = new THREE.Mesh(geo, MAT.body);
   mesh.castShadow = true;
@@ -2696,7 +2706,6 @@ function spawnCrocEntity(color) {
 }
 
 const COLOR_ORDER = ['white', 'red', 'blue', 'yellow', 'green', 'pink'];
-
 function nextColor() {
   const c = COLOR_ORDER[state.colorIndex % COLOR_ORDER.length];
   state.colorIndex++;
@@ -2704,7 +2713,6 @@ function nextColor() {
 }
 
 function spawnPollo() {
-  if (pollos.length + crocs.length >= MAX_ENTITIES) return;
   idleTime = 0;
   const extraPerClick = shopState.morePollo || 0;
   const count = 1 + extraPerClick;
@@ -2717,6 +2725,7 @@ function spawnPollo() {
 }
 
 function updatePollos(dt) {
+  const crocsToSpawn = [];
   for (let i = pollos.length - 1; i >= 0; i--) {
     const p = pollos[i];
     const m = p.mesh;
@@ -2751,10 +2760,14 @@ function updatePollos(dt) {
         scene.remove(m);
         pollos.splice(i, 1);
         Sound.splash();
-        pendingCrocs.push(p.color);
-        if (pendingCrocs.length > 40) pendingCrocs.shift();
+        // Natychmiast spawn cocodrillo tego samego koloru - interwały identyczne z wejściem
+        crocsToSpawn.push(p.color);
       }
     }
+  }
+  // Spawn po iteracji (nie modyfikujemy tablicy podczas iteracji)
+  for (const color of crocsToSpawn) {
+    if (spawnCrocEntity(color)) Sound.crocEmerge();
   }
 }
 
@@ -2819,7 +2832,7 @@ function updateFloatingEggs(dt) {
 }
 
 function awardCroc(c) {
-  const rankMult = RANK_MULT[Math.min(state.level - 1, RANK_MULT.length - 1)];
+  const rankMult = getRankMult();
   const shopMult = 1 + (shopState.goldMult || 0) * 0.3;
   const base = COLOR_VALUES[c.color] || 1;
   const value = Math.floor(base * rankMult * shopMult);
@@ -2903,7 +2916,6 @@ function pulseStat(id) {
   const el = document.getElementById(id);
   el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
 }
-
 function formatNum(n) {
   if (n >= 1e12) return (n / 1e12).toFixed(2) + 'T';
   if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
@@ -2911,7 +2923,6 @@ function formatNum(n) {
   if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
   return Math.floor(n).toString();
 }
-
 function nextUpgradeCost() {
   if (state.level >= 30) return null;
   return UPGRADE_COSTS[state.level - 1];
@@ -2934,7 +2945,11 @@ function updateHUD() {
     elUpgradeCost.textContent = formatNum(cost) + ' 🪙';
   }
   if (shopModal.classList.contains('open')) shopEggsEl.textContent = state.eggs;
-  if (lootModal.classList.contains('open')) lootEggs.textContent = state.eggs;
+  if (lootModal.classList.contains('open')) {
+    lootEggs.textContent = state.eggs;
+    // FIX: odśwież stan przycisku jeśli nie ma animacji
+    if (!reelAnimating) lootOpenBtn.disabled = state.eggs < 1;
+  }
 }
 
 function renderShop() {
@@ -2988,19 +3003,41 @@ function renderShop() {
 function openShop() { shopModal.classList.add('open'); renderShop(); }
 function closeShop() { shopModal.classList.remove('open'); }
 
-/* LOOTBOX — CS:GO style with near-miss dopamine */
+/* LOOTBOX — skalowanie z poziomem */
 const LOOT_REWARDS = [
-  { id: 'gold_s', rarity: 'common', icon: '🪙', label: 'Złoto', weight: 300, apply: () => { const v = Math.max(500, Math.floor(state.gold * 0.03)); state.gold += v; return `+${formatNum(v)} złota`; } },
-  { id: 'gold_m', rarity: 'uncommon', icon: '💰', label: 'Worek złota', weight: 120, apply: () => { const v = Math.max(2000, Math.floor(state.gold * 0.15)); state.gold += v; return `+${formatNum(v)} złota`; } },
-  { id: 'gold_l', rarity: 'rare', icon: '💎', label: 'Kufer złota', weight: 40, apply: () => { const v = Math.max(10000, Math.floor(state.gold * 0.5)); state.gold += v; return `+${formatNum(v)} złota`; } },
-  { id: 'gold_xl', rarity: 'epic', icon: '👑', label: 'Skarbiec!', weight: 12, apply: () => { const v = Math.max(100000, Math.floor(state.gold * 2)); state.gold += v; return `+${formatNum(v)} złota`; } },
-  { id: 'egg_1', rarity: 'uncommon', icon: '🥚', label: '+1 Jajo', weight: 100, apply: () => { state.eggs += 1; return '+1 Jajo Pollo'; } },
-  { id: 'egg_3', rarity: 'rare', icon: '🧺', label: '+3 Jaja', weight: 30, apply: () => { state.eggs += 3; return '+3 Jaja Pollo'; } },
-  { id: 'egg_10', rarity: 'epic', icon: '🪺', label: '+10 Jaj!', weight: 6, apply: () => { state.eggs += 10; return '+10 Jaj Pollo!'; } },
-  { id: 'perm_gold', rarity: 'epic', icon: '⚡', label: '+1 Złoty Mnożnik', weight: 5, apply: () => { shopState.goldMult = Math.min(15, shopState.goldMult + 1); return '+1 Złoty Mnożnik (sklep)'; } },
-  { id: 'rank_up', rarity: 'legendary', icon: '🌟', label: '+1 RANGA', weight: 1.5, apply: () => { if (state.level < 30) { state.level++; updateFountainLevel(); return `+1 RANGA (poziom ${state.level})!`; } state.gold += 100000; return 'MAX ranga! +100K złota'; } },
-  { id: 'jackpot', rarity: 'legendary', icon: '🎰', label: 'JACKPOT!', weight: 0.5, apply: () => { const v = 1000000; state.gold += v; return `JACKPOT! +${formatNum(v)} złota`; } },
-  { id: 'mega_jackpot', rarity: 'legendary', icon: '🌈', label: 'MEGA JACKPOT!!', weight: 0.05, apply: () => { const v = 50000000; state.gold += v; state.eggs += 25; return `MEGA JACKPOT! +${formatNum(v)} złota + 25 jaj!`; } }
+  { id: 'gold_s', rarity: 'common', icon: '🪙', label: 'Złoto',
+    weight: 300,
+    apply: () => { const v = Math.floor(200 * getRankMult()); state.gold += v; return `+${formatNum(v)} złota`; } },
+  { id: 'gold_m', rarity: 'uncommon', icon: '💰', label: 'Worek złota',
+    weight: 120,
+    apply: () => { const v = Math.floor(1000 * getRankMult()); state.gold += v; return `+${formatNum(v)} złota`; } },
+  { id: 'gold_l', rarity: 'rare', icon: '💎', label: 'Kufer złota',
+    weight: 40,
+    apply: () => { const v = Math.floor(6000 * getRankMult()); state.gold += v; return `+${formatNum(v)} złota`; } },
+  { id: 'gold_xl', rarity: 'epic', icon: '👑', label: 'Skarbiec!',
+    weight: 12,
+    apply: () => { const v = Math.floor(40000 * getRankMult()); state.gold += v; return `+${formatNum(v)} złota`; } },
+  { id: 'egg_1', rarity: 'uncommon', icon: '🥚', label: '+1 Jajo',
+    weight: 100,
+    apply: () => { state.eggs += 1; return '+1 Jajo Pollo'; } },
+  { id: 'egg_3', rarity: 'rare', icon: '🧺', label: '+3 Jaja',
+    weight: 30,
+    apply: () => { state.eggs += 3; return '+3 Jaja Pollo'; } },
+  { id: 'egg_10', rarity: 'epic', icon: '🪺', label: '+10 Jaj!',
+    weight: 6,
+    apply: () => { state.eggs += 10; return '+10 Jaj Pollo!'; } },
+  { id: 'perm_gold', rarity: 'epic', icon: '⚡', label: '+1 Złoty Mnożnik',
+    weight: 5,
+    apply: () => { shopState.goldMult = Math.min(15, shopState.goldMult + 1); return '+1 Złoty Mnożnik (sklep)'; } },
+  { id: 'rank_up', rarity: 'legendary', icon: '🌟', label: '+1 RANGA',
+    weight: 1.5,
+    apply: () => { if (state.level < 30) { state.level++; updateFountainLevel(); return `+1 RANGA (poziom ${state.level})!`; } state.gold += Math.floor(500000 * getRankMult()); return 'MAX ranga! Bonus złota!'; } },
+  { id: 'jackpot', rarity: 'legendary', icon: '🎰', label: 'JACKPOT!',
+    weight: 0.5,
+    apply: () => { const v = Math.floor(500000 * getRankMult()); state.gold += v; return `JACKPOT! +${formatNum(v)} złota`; } },
+  { id: 'mega_jackpot', rarity: 'legendary', icon: '🌈', label: 'MEGA JACKPOT!!',
+    weight: 0.05,
+    apply: () => { const v = Math.floor(20000000 * getRankMult()); state.gold += v; state.eggs += 25; return `MEGA JACKPOT! +${formatNum(v)} złota + 25 jaj!`; } }
 ];
 
 const RARITY_RANK = { common: 0, uncommon: 1, rare: 2, epic: 3, legendary: 4 };
@@ -3035,10 +3072,8 @@ function renderReelItem(reward) {
   return div;
 }
 
-/** Wybierz "suspens" item - użyj wyższej rzadkości niż winner, żeby dać near-miss dopaminę */
 function pickSuspense(winnerRarity) {
   const winnerRank = RARITY_RANK[winnerRarity];
-  // Kandydaci: 1 poziom wyżej (near-miss) i 2 poziomy wyżej (rare near miss)
   const candidates = [];
   for (const r of LOOT_REWARDS) {
     const rr = RARITY_RANK[r.rarity];
@@ -3056,17 +3091,10 @@ function pickSuspense(winnerRarity) {
 function buildReelStrip(winner, winIndex, stripLen) {
   const strip = [];
   for (let i = 0; i < stripLen; i++) {
-    if (i === winIndex) {
-      strip.push(winner);
-    } else if (i >= winIndex - 3 && i < winIndex) {
-      // 3 itemy PRZED zwycięzcą - suspens, blisko wygranej
-      strip.push(pickSuspense(winner.rarity));
-    } else if (i > winIndex && i <= winIndex + 2) {
-      // 2 itemy PO zwycięzcy - nadal ciekawe
-      strip.push(pickSuspense(winner.rarity));
-    } else {
-      strip.push(LOOT_REWARDS[Math.floor(Math.random() * LOOT_REWARDS.length)]);
-    }
+    if (i === winIndex) strip.push(winner);
+    else if (i >= winIndex - 3 && i < winIndex) strip.push(pickSuspense(winner.rarity));
+    else if (i > winIndex && i <= winIndex + 2) strip.push(pickSuspense(winner.rarity));
+    else strip.push(LOOT_REWARDS[Math.floor(Math.random() * LOOT_REWARDS.length)]);
   }
   return strip;
 }
@@ -3082,11 +3110,9 @@ function openLootbox() {
 
   const winner = pickReward();
   reelStrip.innerHTML = '';
-
   const stripLen = 50;
   const winIndex = 42;
   const strip = buildReelStrip(winner, winIndex, stripLen);
-
   for (const r of strip) reelStrip.appendChild(renderReelItem(r));
 
   reelAnimating = true;
@@ -3095,20 +3121,16 @@ function openLootbox() {
   reelStrip.style.transform = 'translateX(0px)';
   void reelStrip.offsetHeight;
 
-  // Zmierz szerokość itemu i kontenera
   const firstItem = reelStrip.querySelector('.reelItem');
   const itemW = firstItem ? firstItem.offsetWidth : 140;
   const reelEl = reelStrip.parentElement;
   const reelW = reelEl.clientWidth;
-
-  // Cel: wygrywający item wyśrodkowany na pointer (środek reela)
   const targetX = (reelW / 2) - (winIndex * itemW + itemW / 2);
 
   const DURATION = 5200;
   reelStrip.style.transition = `transform ${DURATION}ms cubic-bezier(0.08, 0.85, 0.15, 1)`;
   reelStrip.style.transform = `translateX(${targetX}px)`;
 
-  // Tick dźwięk (wolniej na końcu)
   const ticks = 55;
   for (let i = 0; i < ticks; i++) {
     const t = i / ticks;
@@ -3116,7 +3138,16 @@ function openLootbox() {
     setTimeout(() => { if (reelAnimating) Sound.reelTick(); }, delay);
   }
 
+  // FIX: hard safety timeout w razie gdyby setTimeout się nie odpalił
+  const safety = setTimeout(() => {
+    if (reelAnimating) {
+      reelAnimating = false;
+      lootOpenBtn.disabled = state.eggs < 1;
+    }
+  }, DURATION + 2000);
+
   setTimeout(() => {
+    clearTimeout(safety);
     reelAnimating = false;
     lootOpenBtn.disabled = state.eggs < 1;
 
@@ -3165,10 +3196,12 @@ function setLbStatus(online) {
 
 async function refreshLeaderboard() {
   if (!playerId) {
-    // Konto jeszcze nie wybrane - pokaż pusty stan
-    const saveBtn = document.getElementById('lbSaveBtn');
     lbBody.innerHTML = '';
-    if (saveBtn) lbBody.appendChild(saveBtn);
+    const sb = document.createElement('button');
+    sb.className = 'lbSaveBtn'; sb.id = 'lbSaveBtn';
+    sb.textContent = '💾 Zapisz na serwer';
+    sb.disabled = true;
+    lbBody.appendChild(sb);
     lbBody.insertAdjacentHTML('beforeend', '<div class="lbEmpty">Wybierz konto aby zobaczyć ranking</div>');
     updateSaveBtnState();
     return;
@@ -3176,23 +3209,29 @@ async function refreshLeaderboard() {
   const players = await ServerAPI.getLeaderboard();
   if (!ServerAPI.online) {
     players.push({
-      id: playerId,
-      playerName: state.playerName,
-      gold: state.gold,
-      level: state.level,
-      eggs: state.eggs,
-      stats: state.stats,
-      updatedAt: Date.now()
+      id: playerId, playerName: state.playerName,
+      gold: state.gold, level: state.level, eggs: state.eggs,
+      stats: state.stats, updatedAt: Date.now()
     });
     setLbStatus(false);
   } else {
     setLbStatus(true);
   }
-  players.sort((a, b) => (b.gold || 0) - (a.gold || 0));
 
-  const saveBtn = document.getElementById('lbSaveBtn');
+  // SORTOWANIE PO POZIOMIE (gold jako tiebreaker)
+  players.sort((a, b) => {
+    const lvA = a.level || 1, lvB = b.level || 1;
+    if (lvB !== lvA) return lvB - lvA;
+    return (b.gold || 0) - (a.gold || 0);
+  });
+
   lbBody.innerHTML = '';
-  if (saveBtn) lbBody.appendChild(saveBtn);
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'lbSaveBtn'; saveBtn.id = 'lbSaveBtn';
+  saveBtn.textContent = '💾 Zapisz na serwer';
+  saveBtn.addEventListener('click', (e) => { e.stopPropagation(); saveToServer(); });
+  lbBody.appendChild(saveBtn);
 
   if (players.length === 0) {
     lbBody.insertAdjacentHTML('beforeend', '<div class="lbEmpty">Brak graczy w rankingu</div>');
@@ -3210,9 +3249,12 @@ async function refreshLeaderboard() {
       <div class="lbRank">#${i + 1}</div>
       <div>
         <div class="lbName">${escapeHtml(p.playerName || 'Pollo')}</div>
-        <div class="lbDetail">Lv${p.level || 1} · ${rn}</div>
+        <div class="lbDetail">${rn}</div>
       </div>
-      <div class="lbGold">${formatNum(p.gold || 0)}</div>
+      <div class="lbRight">
+        <div class="lbLvBig">Lv ${p.level || 1}</div>
+        <div class="lbGold">${formatNum(p.gold || 0)} 🪙</div>
+      </div>
     `;
     const detail = document.createElement('div');
     detail.className = 'lbRowDetail';
@@ -3220,9 +3262,9 @@ async function refreshLeaderboard() {
     const playtimeMin = Math.floor((st.playtime || 0) / 60);
     const date = p.updatedAt ? new Date(p.updatedAt).toLocaleDateString('pl-PL') : '-';
     detail.innerHTML = `
+      <div class="dRow"><span>👑 Poziom</span><b>${p.level || 1} / 30</b></div>
       <div class="dRow"><span>🪙 Złoto</span><b>${formatNum(p.gold || 0)}</b></div>
       <div class="dRow"><span>🥚 Jajka</span><b>${p.eggs || 0}</b></div>
-      <div class="dRow"><span>👑 Ranga</span><b>${rn}</b></div>
       <div class="dRow"><span>🐔 Pollo</span><b>${formatNum(st.pollosSpawned || 0)}</b></div>
       <div class="dRow"><span>🐊 Cocodrillo</span><b>${formatNum(st.crocsFallen || 0)}</b></div>
       <div class="dRow"><span>🎁 Skrzynki</span><b>${st.lootboxesOpened || 0}</b></div>
@@ -3245,24 +3287,36 @@ async function refreshLeaderboard() {
 
   const me = players.find(p => p.id === playerId);
   if (me) {
-    const card = document.createElement('div');
-    card.className = 'lbMeCard';
-    card.innerHTML = `
-      <div style="font-weight:800;font-size:12px;margin-bottom:6px;color:#ffe27a;">📊 TWOJE STATY</div>
-      <div class="row"><span>🏆 Miejsce</span><b>#${players.indexOf(me) + 1}</b></div>
-      <div class="row"><span>👑 Ranga</span><b>${RANK_NAMES[Math.min((me.level || 1) - 1, 29)]}</b></div>
-      <div class="row"><span>🪙 Złoto</span><b>${formatNum(me.gold || 0)}</b></div>
-      <div class="row"><span>🥚 Jajka</span><b>${me.eggs || 0}</b></div>
-      <div class="row"><span>🐔 Pollo</span><b>${formatNum((me.stats && me.stats.pollosSpawned) || 0)}</b></div>
-      <div class="row"><span>🐊 Cocodrillo</span><b>${formatNum((me.stats && me.stats.crocsFallen) || 0)}</b></div>
-      <div class="row"><span>🎁 Skrzynki</span><b>${(me.stats && me.stats.lootboxesOpened) || 0}</b></div>
-      <button class="lbDelete" id="lbDeleteBtn">🗑️ USUŃ MNIE Z SERWERA</button>
-    `;
-    lbBody.appendChild(card);
-    setTimeout(() => {
-      const db = document.getElementById('lbDeleteBtn');
-      if (db) db.addEventListener('click', (e) => { e.stopPropagation(); deleteFromServer(); });
-    }, 0);
+    const toggle = document.createElement('button');
+    toggle.className = 'lbMyStatsBtn';
+    toggle.innerHTML = `📊 MOJE STATY <span class="arrow">${myStatsOpen ? '▲' : '▼'}</span>`;
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      myStatsOpen = !myStatsOpen;
+      refreshLeaderboard();
+      Sound.pop();
+    });
+    lbBody.appendChild(toggle);
+
+    if (myStatsOpen) {
+      const card = document.createElement('div');
+      card.className = 'lbMeCard';
+      card.innerHTML = `
+        <div class="row"><span>🏆 Miejsce</span><b>#${players.indexOf(me) + 1}</b></div>
+        <div class="row"><span>👑 Ranga</span><b>${RANK_NAMES[Math.min((me.level || 1) - 1, 29)]}</b></div>
+        <div class="row"><span>🪙 Złoto</span><b>${formatNum(me.gold || 0)}</b></div>
+        <div class="row"><span>🥚 Jajka</span><b>${me.eggs || 0}</b></div>
+        <div class="row"><span>🐔 Pollo</span><b>${formatNum((me.stats && me.stats.pollosSpawned) || 0)}</b></div>
+        <div class="row"><span>🐊 Cocodrillo</span><b>${formatNum((me.stats && me.stats.crocsFallen) || 0)}</b></div>
+        <div class="row"><span>🎁 Skrzynki</span><b>${(me.stats && me.stats.lootboxesOpened) || 0}</b></div>
+        <button class="lbDelete" id="lbDeleteBtn">🗑️ USUŃ MNIE Z SERWERA</button>
+      `;
+      lbBody.appendChild(card);
+      setTimeout(() => {
+        const db = document.getElementById('lbDeleteBtn');
+        if (db) db.addEventListener('click', (e) => { e.stopPropagation(); deleteFromServer(); });
+      }, 0);
+    }
   }
   updateSaveBtnState();
 }
@@ -3286,10 +3340,6 @@ document.getElementById('lbRefresh').addEventListener('click', async (e) => {
   btn.classList.add('spin');
   await refreshLeaderboard();
   setTimeout(() => btn.classList.remove('spin'), 800);
-});
-document.getElementById('lbSaveBtn').addEventListener('click', (e) => {
-  e.stopPropagation();
-  saveToServer();
 });
 
 /* ACCOUNTS UI */
@@ -3427,6 +3477,9 @@ btnShop.addEventListener('click', () => { Sound.unlock(); unlockAudio(); openSho
 btnLoot.addEventListener('click', () => {
   Sound.unlock(); unlockAudio();
   lootModal.classList.add('open');
+  // FIX: reset stuck state
+  reelAnimating = false;
+  lootOpenBtn.disabled = state.eggs < 1;
   updateHUD();
   reelStrip.innerHTML = '';
   for (let i = 0; i < 6; i++) reelStrip.appendChild(renderReelItem(LOOT_REWARDS[i % LOOT_REWARDS.length]));
@@ -3462,24 +3515,46 @@ window.addEventListener('keydown', e => {
   if (e.code === 'KeyL') btnLoot.click();
 });
 
-/* CAMERA */
+/* CAMERA + CLICK-TO-SPAWN */
 const canvasEl = renderer.domElement;
-const pointer = { down: false, x: 0, y: 0, id: null };
+const pointer = {
+  down: false, x: 0, y: 0, id: null,
+  startX: 0, startY: 0, startTime: 0, moved: false
+};
 
 canvasEl.addEventListener('pointerdown', e => {
-  pointer.down = true; pointer.x = e.clientX; pointer.y = e.clientY; pointer.id = e.pointerId;
+  pointer.down = true;
+  pointer.x = e.clientX; pointer.y = e.clientY;
+  pointer.startX = e.clientX; pointer.startY = e.clientY;
+  pointer.startTime = performance.now();
+  pointer.moved = false;
+  pointer.id = e.pointerId;
   try { canvasEl.setPointerCapture(e.pointerId); } catch (_) {}
 });
 canvasEl.addEventListener('pointerup', e => {
   if (e.pointerId !== pointer.id) return;
+  const elapsed = performance.now() - pointer.startTime;
+  const dx = Math.abs(e.clientX - pointer.startX);
+  const dy = Math.abs(e.clientY - pointer.startY);
+  const wasClick = !pointer.moved && elapsed < 350 && dx < 8 && dy < 8;
   pointer.down = false; pointer.id = null;
   try { canvasEl.releasePointerCapture(e.pointerId); } catch (_) {}
+
+  if (wasClick) {
+    if (introModal.classList.contains('open')) return;
+    if (shopModal.classList.contains('open')) return;
+    if (lootModal.classList.contains('open')) return;
+    if (!playerId) return;
+    Sound.unlock(); unlockAudio();
+    spawnPollo();
+  }
 });
 canvasEl.addEventListener('pointercancel', () => { pointer.down = false; pointer.id = null; });
 canvasEl.addEventListener('pointermove', e => {
   if (!pointer.down || e.pointerId !== pointer.id) return;
   const dx = e.clientX - pointer.x, dy = e.clientY - pointer.y;
   pointer.x = e.clientX; pointer.y = e.clientY;
+  if (Math.abs(e.clientX - pointer.startX) > 8 || Math.abs(e.clientY - pointer.startY) > 8) pointer.moved = true;
   camState.theta -= dx * 0.0062;
   camState.phi = clamp(camState.phi - dy * 0.0052, 0.24, 1.44);
 });
@@ -3525,6 +3600,7 @@ let _lastTime = performance.now();
 let _elapsed = 0;
 let _hudAccum = 0;
 let _saveAccum = 0;
+let idleTime = 0;
 
 function animate(now) {
   requestAnimationFrame(animate);
@@ -3535,25 +3611,6 @@ function animate(now) {
   if (playerId) state.stats.playtime += dt;
 
   idleTime += dt;
-
-  if (pendingCrocs.length > 0) {
-    crocSpawnTimer -= dt;
-    const burst = idleTime > 2.0;
-    if (crocSpawnTimer <= 0) {
-      if (burst) {
-        const n = Math.min(pendingCrocs.length, 5);
-        crocSpawnTimer = 0.08;
-        for (let i = 0; i < n; i++) {
-          const color = pendingCrocs.shift();
-          if (color && spawnCrocEntity(color)) Sound.crocEmerge();
-        }
-      } else {
-        crocSpawnTimer = 0.5;
-        const color = pendingCrocs.shift();
-        if (color && spawnCrocEntity(color)) Sound.crocEmerge();
-      }
-    }
-  }
 
   updatePollos(dt);
   updateCrocs(dt);
@@ -3571,7 +3628,6 @@ function animate(now) {
     state.hudDirty = false;
   }
 
-  // Zapis lokalny co 20s
   _saveAccum += dt;
   if (_saveAccum > 20 && state.dirty && playerId) {
     _saveAccum = 0;
@@ -3589,13 +3645,11 @@ applyTimeOfDay();
 updateFountainLevel();
 updateHUD();
 
-// ZAWSZE pokazuj intro (wybór konta)
 introModal.classList.add('open');
 renderAccountList();
 
 requestAnimationFrame(animate);
 
-/* OSTRZEŻENIE PRZY WYJŚCIU */
 window.addEventListener('beforeunload', (e) => {
   if (!playerId) return;
   saveLocal();
