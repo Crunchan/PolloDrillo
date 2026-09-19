@@ -592,7 +592,7 @@ input, button { font-family: inherit; }
 /* LOOTBOX */
 #lootModal .modalContent { width: min(680px, 100%); }
 .lootHeader { padding: 18px 22px 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.12); }
-.lootBody { padding: 12px 22px 8px; }
+.lootBody { padding: 12px 22px 8px; flex: 1; min-height: 0; overflow-y: auto; touch-action: pan-y; }
 .lootSub { text-align: center; font-size: 12px; opacity: 0.75; margin-bottom: 10px; }
 .batchSelector { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; }
 .batchBtn {
@@ -790,13 +790,13 @@ input, button { font-family: inherit; }
   .stat .val { font-size: 18px; }
   #levelPanel { min-width: 180px; }
   .rankName { font-size: 14px; }
-  #volumePanel { top: calc(170px + env(safe-area-inset-top)); min-width: 180px; padding: 6px 12px 8px; }
-  #lb { width: 230px; top: calc(230px + env(safe-area-inset-top)); max-height: calc(100vh - 340px); }
-  #lbToggle { top: calc(230px + env(safe-area-inset-top)); }
-  #btnNight { top: calc(310px + env(safe-area-inset-top)); width: 46px; height: 46px; font-size: 20px; }
-  #btnTheme { top: calc(364px + env(safe-area-inset-top)); width: 46px; height: 46px; font-size: 20px; }
-  #btnFountain { top: calc(418px + env(safe-area-inset-top)); width: 46px; height: 46px; font-size: 20px; }
-  #btnInstall { top: calc(310px + env(safe-area-inset-top)); right: calc(70px + env(safe-area-inset-right)); width: 40px; height: 40px; }
+  #volumePanel { top: calc(210px + env(safe-area-inset-top)); min-width: 180px; padding: 6px 12px 8px; }
+  #lb { width: 230px; top: calc(270px + env(safe-area-inset-top)); max-height: calc(100vh - 380px); }
+  #lbToggle { top: calc(270px + env(safe-area-inset-top)); }
+  #btnNight { top: calc(290px + env(safe-area-inset-top)); width: 46px; height: 46px; font-size: 20px; }
+  #btnTheme { top: calc(344px + env(safe-area-inset-top)); width: 46px; height: 46px; font-size: 20px; }
+  #btnFountain { top: calc(398px + env(safe-area-inset-top)); width: 46px; height: 46px; font-size: 20px; }
+  #btnInstall { top: calc(290px + env(safe-area-inset-top)); right: calc(70px + env(safe-area-inset-right)); width: 40px; height: 40px; }
   #buttons { max-width: calc(100vw - 160px); gap: 10px; }
   .btn { min-width: 140px; padding: 10px 14px 11px; font-size: 12.5px; }
   #btnShop { min-width: 105px; padding: 9px 12px 10px; font-size: 11.5px; }
@@ -804,12 +804,19 @@ input, button { font-family: inherit; }
   #shopItems { grid-template-columns: 1fr; }
   .loadingLogo { font-size: 68px; }
   .loadingTitle { font-size: 22px; letter-spacing: 3px; }
+  .reel { height: 110px; }
+  .reelItem { width: 110px; height: 110px; }
+  .reelItem .ic { font-size: 36px; }
+  .reelItem .nm { font-size: 11px; }
+  .batchGrid.b4 { max-width: 280px; }
+  .batchGrid.b10 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .lootFooter { padding: 8px 16px 14px; }
 }
 
 @media (max-width: 600px) {
   #statsPanel { min-width: 0; }
   #levelPanel { min-width: 0; }
-  #volumePanel { min-width: 0; }
+  #volumePanel { min-width: 0; top: calc(250px + env(safe-area-inset-top)); }
   #lb { width: calc(100vw - 28px); left: 14px; top: calc(280px + env(safe-area-inset-top)); max-height: calc(100vh - 380px); }
   #lbToggle { top: calc(280px + env(safe-area-inset-top)); }
   #buttons { max-width: calc(100vw - 20px); gap: 8px; bottom: calc(80px + env(safe-area-inset-bottom)); }
@@ -821,6 +828,23 @@ input, button { font-family: inherit; }
   #btnFountain { top: auto; bottom: calc(136px + env(safe-area-inset-bottom)); right: calc(14px + env(safe-area-inset-right)); }
   #btnInstall { top: auto; bottom: calc(20px + env(safe-area-inset-bottom)); right: calc(14px + env(safe-area-inset-right)); }
   #btnInstall.show ~ #btnNight { right: calc(80px + env(safe-area-inset-right)); }
+  #lootModal .modalContent { max-height: 96vh; }
+  .lootHeader { padding: 12px 14px 8px; }
+  .lootBody { padding: 8px 12px 4px; }
+  .lootSub { font-size: 11px; margin-bottom: 6px; }
+  .batchSelector { gap: 6px; margin-bottom: 8px; }
+  .batchBtn { padding: 6px 12px; min-width: 62px; font-size: 12px; }
+  .batchBtn small { font-size: 9px; }
+  .reel { height: 90px; }
+  .reelItem { width: 90px; height: 90px; }
+  .reelItem .ic { font-size: 30px; }
+  .reelItem .nm { font-size: 10px; }
+  .batchGrid.b4 { max-width: 220px; gap: 6px; }
+  .batchGrid.b10 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .batchReveal .ic { font-size: 26px; }
+  .batchReveal .nm { font-size: 9px; }
+  .lootFooter { padding: 6px 12px 12px; }
+  #lootOpenBtn { padding: 10px 18px; font-size: 13.5px; border-radius: 14px; }
 }
 
 @media (orientation: landscape) and (max-height: 560px) {
@@ -834,12 +858,12 @@ input, button { font-family: inherit; }
   .lvlMeta { font-size: 9.5px; }
   .bar { height: 8px; margin-top: 4px; }
   .mult { font-size: 10.5px; margin-top: 4px; }
-  #volumePanel { top: calc(90px + env(safe-area-inset-top)); right: calc(8px + env(safe-area-inset-right)); min-width: 160px; padding: 5px 10px 6px; }
+  #volumePanel { top: calc(100px + env(safe-area-inset-top)); right: calc(8px + env(safe-area-inset-right)); min-width: 160px; padding: 5px 10px 6px; }
   .volRow { font-size: 9px; }
   .volSlider { height: 5px; }
-  #btnNight { top: calc(160px + env(safe-area-inset-top)); width: 40px; height: 40px; font-size: 17px; bottom: auto; }
-  #btnTheme { top: calc(204px + env(safe-area-inset-top)); width: 40px; height: 40px; font-size: 17px; bottom: auto; }
-  #btnFountain { top: calc(248px + env(safe-area-inset-top)); width: 40px; height: 40px; font-size: 17px; bottom: auto; }
+  #btnNight { top: calc(180px + env(safe-area-inset-top)); width: 40px; height: 40px; font-size: 17px; bottom: auto; }
+  #btnTheme { top: calc(224px + env(safe-area-inset-top)); width: 40px; height: 40px; font-size: 17px; bottom: auto; }
+  #btnFountain { top: calc(268px + env(safe-area-inset-top)); width: 40px; height: 40px; font-size: 17px; bottom: auto; }
   #lb { top: calc(160px + env(safe-area-inset-top)); left: calc(8px + env(safe-area-inset-left)); width: 175px; max-height: calc(100vh - 175px); }
   #lbToggle { top: calc(160px + env(safe-area-inset-top)); left: calc(8px + env(safe-area-inset-left)); width: 34px; height: 34px; font-size: 15px; }
   .lbHead { padding: 7px 9px; }
