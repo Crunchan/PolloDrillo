@@ -2,236 +2,75 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#0a1428">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<title>🐔 Pollo &amp; Cocodrillo</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="refresh" content="0; url=https://pollodrillo.pages.dev/">
+<title>Pollo & Cocodrillo — przekierowanie...</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    background: #0a1428;
+    color: #fff;
+    font-family: 'Baloo 2', system-ui, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+  }
+  .box {
+    animation: fade 0.4s ease;
+  }
+  @keyframes fade {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .logo {
+    font-size: 84px;
+    margin-bottom: 12px;
+    filter: drop-shadow(0 0 40px rgba(255,210,100,0.6));
+    animation: bob 1.5s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50%      { transform: translateY(-10px) rotate(3deg); }
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #ffe27a;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    text-shadow: 0 0 24px rgba(255,200,60,0.6);
+  }
+  p {
+    font-size: 13px;
+    opacity: 0.7;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+  a {
+    color: #9fe8ff;
+    text-decoration: none;
+    font-weight: 800;
+  }
+</style>
 </head>
 <body>
-
-<div id="loadingScreen">
-  <div class="loadingBg"></div>
-  <div class="loadingLogo">🐔</div>
-  <div class="loadingTitle">POLLO</div>
-  <div class="loadingSub">Symulator Fontanny</div>
-  <div class="loadingBar"><div class="loadingBarFill" id="loadingBarFill"></div></div>
-  <div class="loadingStatus" id="loadingStatus">Ładowanie...</div>
-  <div class="loadingDots"><span></span><span></span><span></span></div>
+<div class="box">
+  <div class="logo">🐔</div>
+  <h1>Przekierowanie...</h1>
+  <p>Jeśli nie nastąpi automatycznie:<br><a href="https://pollodrillo.pages.dev/">pollodrillo.pages.dev</a></p>
 </div>
 
-<audio id="bgMusic" loop preload="auto">
-  <source src="theme.mp3" type="audio/mpeg">
-</audio>
-
-<div id="hud">
-  <div class="panel" id="statsPanel">
-    <div class="stat" id="goldStat">
-      <span class="lbl">Złoto</span>
-      <span class="val"><span>🪙</span><span id="goldValue">0</span></span>
-    </div>
-    <div class="stat" id="eggStat">
-      <span class="lbl">Jajka</span>
-      <span class="val"><span>🥚</span><span id="eggValue">0</span></span>
-    </div>
-  </div>
-
-  <div class="panel" id="levelPanel">
-    <div class="lvlRow">
-      <span class="lvlBadge" id="lvlBadge">Lv 1</span>
-      <span class="lvlMult" id="multText">×1</span>
-    </div>
-    <div class="bar"><div class="barFill" id="levelBar"></div></div>
-  </div>
-
-  <div id="cpsWidget">
-    <div class="cpsBadge">
-      <svg class="cpsRing" viewBox="0 0 48 48">
-        <circle class="cpsRingBg" cx="24" cy="24" r="20" />
-        <circle class="cpsRingFill" id="cpsRingFill" cx="24" cy="24" r="20" />
-      </svg>
-      <span class="cpsValue" id="cpsValue">0</span>
-    </div>
-    <div class="cpsText">
-      <span class="cpsLabel">CPS</span>
-      <span class="cpsMax">max 15</span>
-    </div>
-  </div>
-
-  <button class="iconBtn" id="btnSettings" title="Ustawienia">⚙️</button>
-  <button class="iconBtn" id="btnNight" title="Dzień/Noc">🌙</button>
-  <button class="iconBtn" id="btnTheme" title="Kolekcja">🎨</button>
-  <button class="iconBtn" id="btnInstall" title="Zainstaluj">📲</button>
-
-  <button id="lbToggle" title="Pokaż ranking">🏆</button>
-  <div id="lb">
-    <div class="lbHead">
-      <div class="lbTitle"><span class="em">🏆</span> Ranking</div>
-      <div class="lbActions">
-        <span class="lbStatus offline" id="lbStatus">offline</span>
-        <button id="lbRefresh" title="Odśwież">🔄</button>
-        <button id="lbClose" title="Schowaj">◀</button>
-      </div>
-    </div>
-    <div id="lbBody"></div>
-  </div>
-
-  <div id="buttons">
-    <button class="btn" id="btnUpgrade">✨ Fontanna<span class="bSub" id="upgradeCost">2 500 🪙</span></button>
-    <button class="btn" id="btnLoot">🥚 Jajo<span class="bSub">1 jajo = losowa nagroda</span></button>
-  </div>
-
-  <button id="btnShop">
-    🥚 Sklepik
-    <span class="bSub" id="shopEggCount">0 Jajek</span>
-  </button>
-
-  <div id="hint">
-    🐔 Klik gdziekolwiek = Pollo!<br>
-    🐊 Cocodrillo → złoto<br>
-    🖱️ Przeciągnij = kamera
-  </div>
-</div>
-
-<div id="toast"></div>
-<div id="popups"></div>
-<div id="lootWinFlash"></div>
-
-<div id="introModal" class="modalOverlay">
-  <div class="modalContent">
-    <div class="introBody">
-      <div class="introTitle">🐔 POLLO &amp; COCODRILO 🐊</div>
-      <div class="introSub">Symulator POLLO · v2.3</div>
-
-      <div id="accountSection">
-        <div class="introName">
-          <label>Wybierz konto</label>
-          <div id="accountList" class="accountList"></div>
-        </div>
-        <button id="btnNewAccount" class="btnNewAccount">➕ Nowe konto</button>
-      </div>
-
-      <div id="newAccountForm" style="display:none;">
-        <div class="introName">
-          <label>Nazwa nowego konta</label>
-          <input id="playerNameInput" type="text" maxlength="14" placeholder="np. PolloKing" autocomplete="off">
-        </div>
-        <div style="display:flex;gap:8px;margin-bottom:14px;">
-          <button id="btnCreateAccount" class="btnPrimary">✓ Utwórz</button>
-          <button id="btnCancelNew" class="btnSecondary">Anuluj</button>
-        </div>
-      </div>
-
-      <div class="introSteps">
-        <div class="row"><span class="n">1</span><div>Klikaj <b>gdziekolwiek</b> — Pollo wpada do Fontanny.</div></div>
-        <div class="row"><span class="n">2</span><div>Z Fontanny wychodzą <b>Cocodrillo</b> 🐊</div></div>
-        <div class="row"><span class="n">3</span><div>Cocodrillo idą do klifu i <b>spadają</b> → złoto 🪙</div></div>
-        <div class="row"><span class="n">4</span><div>Otwieraj <b>Jaja Pollo</b> — drop skinów fontanny i motywów!</div></div>
-        <div class="row"><span class="n">5</span><div>Kliknij <b>💾 Zapisz na serwer</b> aby zapisać online.</div></div>
-      </div>
-
-      <div class="introInfo">
-        <span class="lbl">🎵 Muzyka</span>
-        <div>Utwór pochodzi z YouTube — prawa do właścicieli.</div>
-        <span class="lbl">📅 Update v2.3</span>
-        <div>Mobile-friendly UI, ustawienia, scalona kolekcja.</div>
-        <span class="lbl">🐙 GitHub</span>
-        <div><a href="https://github.com/Crunchan/PolloDrillo" target="_blank" rel="noopener">github.com/Crunchan/PolloDrillo</a></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="shopModal" class="modalOverlay">
-  <div class="modalContent">
-    <div class="modalHeader">
-      <div class="modalTitle"><span class="em">🥚</span> Sklepik Pollo</div>
-      <div class="eggCounter">🐣 <span id="shopEggs">0</span></div>
-      <button class="modalClose" id="shopClose">✕</button>
-    </div>
-    <div id="shopItems"></div>
-    <div class="dangerZone">
-      <span>⚠️ Reset usuwa postęp lokalny + z serwera.</span>
-      <button class="dangerBtn" id="btnReset">🗑️ RESET</button>
-    </div>
-  </div>
-</div>
-
-<div id="lootModal" class="modalOverlay">
-  <div class="modalContent">
-    <div class="lootHeader">
-      <div class="modalTitle"><span class="em">🥚</span> Jajo Pollo</div>
-      <div class="eggCounter">🐣 <span id="lootEggs">0</span></div>
-      <button class="modalClose" id="lootClose">✕</button>
-    </div>
-    <div class="lootBody">
-      <div class="lootSub">Wybierz ile jaj otworzyć</div>
-      <div class="batchSelector" id="batchSelector">
-        <button class="batchBtn active" data-batch="1">1× <small>1 🥚</small></button>
-        <button class="batchBtn" data-batch="4">4× <small>4 🥚</small></button>
-        <button class="batchBtn" data-batch="10">10× <small>10 🥚</small></button>
-        <div class="customBatch">
-          <input type="number" id="customBatchInput" min="1" step="1" placeholder="?" inputmode="numeric">
-          <button class="batchBtn customSet" id="customBatchBtn" title="Ustaw własną ilość">✓</button>
-        </div>
-      </div>
-      <div class="reel" id="singleReel">
-        <div class="reelStrip" id="reelStrip"></div>
-        <div class="reelPointer"></div>
-      </div>
-      <div class="batchGrid b4" id="batchGrid" style="display:none;"></div>
-    </div>
-    <div class="lootFooter">
-      <button id="lootSkipBtn" class="skipBtn" style="display:none;">⏭️ POMIŃ</button>
-      <button id="lootOpenBtn">🎲 OTWÓRZ (1 🥚)</button>
-    </div>
-  </div>
-</div>
-
-<div id="collectionModal" class="modalOverlay">
-  <div class="modalContent">
-    <div class="modalHeader">
-      <div class="modalTitle"><span class="em">🎨</span> Kolekcja</div>
-      <button class="modalClose" id="collectionClose">✕</button>
-    </div>
-    <div class="collectionTabs">
-      <button class="collTab active" data-tab="themes">🎨 Motywy</button>
-      <button class="collTab" data-tab="fountain">⛲ Fontanny</button>
-    </div>
-    <div class="collectionGrid" id="themeGrid"></div>
-    <div class="collectionGrid" id="fountainGrid" style="display:none;"></div>
-  </div>
-</div>
-
-<div id="settingsModal" class="modalOverlay">
-  <div class="modalContent compactModal">
-    <div class="modalHeader">
-      <div class="modalTitle"><span class="em">⚙️</span> Ustawienia</div>
-      <button class="modalClose" id="settingsClose">✕</button>
-    </div>
-    <div class="settingsBody">
-      <div class="settingRow">
-        <span class="settingLabel">🎵 Muzyka</span>
-        <span class="settingVal" id="volumePct">40%</span>
-      </div>
-      <input type="range" id="volumeSlider" class="volSlider" min="0" max="1" step="0.01" value="0.4">
-      <div class="settingRow second">
-        <span class="settingLabel">🔊 Dźwięki</span>
-        <span class="settingVal" id="sfxPct">80%</span>
-      </div>
-      <input type="range" id="sfxSlider" class="volSlider sfx" min="0" max="1" step="0.01" value="0.8">
-    </div>
-  </div>
-</div>
-
-<script type="importmap">
-{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+<script>
+  // Natychmiastowe przekierowanie (backup jeśli meta refresh zawiedzie)
+  window.location.replace('https://pollodrillo.pages.dev/');
 </script>
-<script type="module" src="main.js"></script>
 </body>
 </html>
