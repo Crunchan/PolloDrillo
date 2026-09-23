@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>🐔 PolloDrillo — przeniesiono</title>
+<meta http-equiv="refresh" content="0;url=https://pollodrillo.pages.dev/">
+<title>🐔 PolloDrillo — przekierowanie</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -25,9 +26,8 @@
     animation:spin 1s linear infinite;
   }
   @keyframes spin { to { transform:rotate(360deg) } }
-  .status { font-size:12px; letter-spacing:1.5px; text-transform:uppercase; opacity:.55; margin-top:16px; min-height:18px; }
   a.btn {
-    display:inline-block; margin-top:20px;
+    display:inline-block; margin-top:10px;
     background:linear-gradient(160deg,#ffd86a,#cc8000);
     color:#4a2800; font-weight:800; padding:13px 26px;
     border-radius:16px; text-decoration:none; font-size:15px;
@@ -38,78 +38,14 @@
 <body>
 <div class="box">
   <div class="logo">🐔</div>
-  <h1>Przenoszenie Twojego konta…</h1>
-  <p>Zaraz przeniesiemy Cię na nowy adres gry.<br>Twoje konta, złoto, motywy i skiny zostaną zachowane.</p>
+  <h1>Przekierowywanie do gry…</h1>
+  <p>Strona została przeniesiona pod nowy adres.<br>Za chwilę nastąpi automatyczne przekierowanie.</p>
   <div class="spinner"></div>
-  <div class="status" id="status">Sprawdzanie zapisu…</div>
-  <a class="btn" id="manual" href="https://pollodrillo.pages.dev/" style="display:none;">Przejdź do gry →</a>
+  <a class="btn" href="https://pollodrillo.pages.dev/">Kliknij tutaj, jeśli nie przekierowano →</a>
 </div>
 
 <script>
-(function () {
-  const WORKER = 'https://pollo-api.crunchdevelop.workers.dev';
-  const NEW_SITE = 'https://pollodrillo.pages.dev/';
-  const statusEl = document.getElementById('status');
-  const manualEl = document.getElementById('manual');
-
-  function setStatus(t) { statusEl.textContent = t; }
-
-  function redirect(url) {
-    setStatus('Przekierowanie…');
-    location.replace(url);
-  }
-
-  function fallback(msg) {
-    setStatus(msg || 'Nie udało się przenieść konta');
-    manualEl.style.display = 'inline-block';
-    // i tak po 2s przekieruj
-    setTimeout(() => redirect(NEW_SITE), 2000);
-  }
-
-  async function run() {
-    const out = { accounts: null, saves: {}, legacySave: null, legacyPid: null };
-    try {
-      out.accounts = localStorage.getItem('pollo_accounts_v1');
-      if (out.accounts) {
-        const accs = JSON.parse(out.accounts) || [];
-        for (const a of accs) {
-          if (!a || !a.id) continue;
-          const raw = localStorage.getItem('pollo_cocodrillo_v3_' + a.id);
-          if (raw) out.saves[a.id] = raw;
-        }
-      }
-      out.legacySave = localStorage.getItem('pollo_cocodrillo_v3');
-      out.legacyPid  = localStorage.getItem('pollo_pid');
-    } catch (e) {}
-
-    const hasAny = out.accounts || out.legacySave;
-    if (!hasAny) {
-      setStatus('Brak danych do przeniesienia');
-      setTimeout(() => redirect(NEW_SITE), 800);
-      return;
-    }
-
-    setStatus('Wysyłanie danych na serwer…');
-    try {
-      const r = await fetch(WORKER + '/api/migrate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(out)
-      });
-      if (r.ok) {
-        const { code } = await r.json();
-        setStatus('Gotowe! Przekierowanie…');
-        redirect(NEW_SITE + '?migrate=' + code);
-        return;
-      }
-      fallback('Błąd serwera — spróbuj ponownie później');
-    } catch (e) {
-      fallback('Brak połączenia — spróbuj ponownie');
-    }
-  }
-
-  run();
-})();
+  window.location.replace('https://pollodrillo.pages.dev/');
 </script>
 </body>
 </html>
